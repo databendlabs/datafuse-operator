@@ -1,3 +1,13 @@
 domain: datafuselabs.io
 repo: datafuse-operator
+resources:
+- group: datafuseoperator
+  kind: DatafuseCluster
+  version: v1
+- group: datafuseoperator
+  kind: DatafuseComputeGroup
+  version: v1
+- group: datafuseoperator
+  kind: DatafuseComputeInstance
+  version: v1
 version: "2"

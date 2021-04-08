@@ -1,0 +1,20 @@
+# permissions for end users to view datafusecomputeinstances.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: datafusecomputeinstance-viewer-role
+rules:
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputeinstances
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputeinstances/status
+  verbs:
+  - get
