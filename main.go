@@ -90,6 +90,14 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "DatafuseComputeInstance")
 		os.Exit(1)
 	}
+	if err = (&controllers.DatafuseComputeSetReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("DatafuseComputeSet"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "DatafuseComputeSet")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("starting manager")

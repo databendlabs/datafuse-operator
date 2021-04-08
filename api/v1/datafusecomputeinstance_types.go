@@ -17,6 +17,7 @@ limitations under the License.
 package v1
 
 import (
+	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,8 +29,18 @@ type DatafuseComputeInstanceSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of DatafuseComputeInstance. Edit DatafuseComputeInstance_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Version string `json:"version,omitempty"`
+	// +kubebuilder:validation:Minimum=1
+	Cores *int32 `json:"cores,omitempty"`
+	// EnvFrom is a list of sources to populate environment variables in the container.
+	// +optional
+	EnvFrom []apiv1.EnvFromSource `json:"envFrom,omitempty"`
+	// Labels are the Kubernetes labels to be added to the pod.
+	// +optional
+	Labels map[string]string `json:"labels,omitempty"`
+	// Image is the container image to use. Overrides Spec.Image if set.
+	// +optional
+	Image *string `json:"image,omitempty"`
 }
 
 // DatafuseComputeInstanceStatus defines the observed state of DatafuseComputeInstance

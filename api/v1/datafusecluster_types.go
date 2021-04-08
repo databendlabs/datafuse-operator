@@ -28,14 +28,16 @@ type DatafuseClusterSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of DatafuseCluster. Edit DatafuseCluster_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Define a set of compute groups belongs to the cluster
+	ComputeGroups []*DatafuseComputeGroup `json:"computegroup,omitempty"`
+	Version       string                  `json:"version,omitempty"`
 }
 
 // DatafuseClusterStatus defines the observed state of DatafuseCluster
 type DatafuseClusterStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	ActiveComputeGroups []*DatafuseComputeGroup `json:"active,omitempty"`
 }
 
 // +kubebuilder:object:root=true

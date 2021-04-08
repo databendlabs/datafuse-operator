@@ -10,4 +10,7 @@ resources:
 - group: datafuseoperator
   kind: DatafuseComputeInstance
   version: v1
+- group: datafuseoperator
+  kind: DatafuseComputeSet
+  version: v1
 version: "2"

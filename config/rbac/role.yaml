@@ -1,0 +1,88 @@
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafuseclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafuseclusters/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputegroups
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputegroups/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputeinstances
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputeinstances/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputesets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputesets/status
+  verbs:
+  - get
+  - patch
+  - update

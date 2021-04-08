@@ -23,46 +23,47 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// DatafuseComputeGroupSpec defines the desired state of DatafuseComputeGroup
-type DatafuseComputeGroupSpec struct {
+// DatafuseComputeSetSpec defines the desired state of DatafuseComputeSet
+type DatafuseComputeSetSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of DatafuseComputeGroup. Edit DatafuseComputeGroup_types.go to remove/update
-	ComputeLeaders DatafuseComputeSet`json:"leaders,omitempty"`
-	// +optional
-	ComputeWorkers DatafuseComputeSet `json:"workers,omitempty"`
-	// +optional
-	Version string `json:"version,omitempty"`
+	// Number of compute instances
+	Replicas *int32 `json:"replicas,omitempty"`
+	DatafuseComputeInstanceSpec  `json:",inline"`
 }
 
-// DatafuseComputeGroupStatus defines the observed state of DatafuseComputeGroup
-type DatafuseComputeGroupStatus struct {
+// DatafuseComputeSetStatus defines the observed state of DatafuseComputeSet
+type DatafuseComputeSetStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	ReadyComputeLeaders []*DatafuseComputeInstance `json:"readyleaders,omitempty"`
+    Replicas int32 `json:"replicas,omitempty"`
+    Selector string `json:"selector,omitempty"` // this must be the string form of the selector
+
 }
 
 // +kubebuilder:object:root=true
 
-// DatafuseComputeGroup is the Schema for the datafusecomputegroups API
-type DatafuseComputeGroup struct {
+// DatafuseComputeSet is the Schema for the datafusecomputesets API
+// +kubebuilder:subresource:status
+// +kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.selector
+type DatafuseComputeSet struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   DatafuseComputeGroupSpec   `json:"spec,omitempty"`
-	Status DatafuseComputeGroupStatus `json:"status,omitempty"`
+	Spec   DatafuseComputeSetSpec   `json:"spec,omitempty"`
+	Status DatafuseComputeSetStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// DatafuseComputeGroupList contains a list of DatafuseComputeGroup
-type DatafuseComputeGroupList struct {
+// DatafuseComputeSetList contains a list of DatafuseComputeSet
+type DatafuseComputeSetList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []DatafuseComputeGroup `json:"items"`
+	Items           []DatafuseComputeSet `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&DatafuseComputeGroup{}, &DatafuseComputeGroupList{})
+	SchemeBuilder.Register(&DatafuseComputeSet{}, &DatafuseComputeSetList{})
 }

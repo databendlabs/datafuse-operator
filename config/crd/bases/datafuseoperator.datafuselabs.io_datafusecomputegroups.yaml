@@ -1,0 +1,334 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: datafusecomputegroups.datafuseoperator.datafuselabs.io
+spec:
+  group: datafuseoperator.datafuselabs.io
+  names:
+    kind: DatafuseComputeGroup
+    listKind: DatafuseComputeGroupList
+    plural: datafusecomputegroups
+    singular: datafusecomputegroup
+  scope: Namespaced
+  validation:
+    openAPIV3Schema:
+      description: DatafuseComputeGroup is the Schema for the datafusecomputegroups
+        API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: DatafuseComputeGroupSpec defines the desired state of DatafuseComputeGroup
+          properties:
+            leaders:
+              description: Foo is an example field of DatafuseComputeGroup. Edit DatafuseComputeGroup_types.go
+                to remove/update
+              properties:
+                apiVersion:
+                  description: 'APIVersion defines the versioned schema of this representation
+                    of an object. Servers should convert recognized schemas to the
+                    latest internal value, and may reject unrecognized values. More
+                    info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+                  type: string
+                kind:
+                  description: 'Kind is a string value representing the REST resource
+                    this object represents. Servers may infer this from the endpoint
+                    the client submits requests to. Cannot be updated. In CamelCase.
+                    More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                  type: string
+                metadata:
+                  type: object
+                spec:
+                  description: DatafuseComputeSetSpec defines the desired state of
+                    DatafuseComputeSet
+                  properties:
+                    cores:
+                      format: int32
+                      minimum: 1
+                      type: integer
+                    envFrom:
+                      description: EnvFrom is a list of sources to populate environment
+                        variables in the container.
+                      items:
+                        description: EnvFromSource represents the source of a set
+                          of ConfigMaps
+                        properties:
+                          configMapRef:
+                            description: The ConfigMap to select from
+                            properties:
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                  TODO: Add other useful fields. apiVersion, kind,
+                                  uid?'
+                                type: string
+                              optional:
+                                description: Specify whether the ConfigMap must be
+                                  defined
+                                type: boolean
+                            type: object
+                          prefix:
+                            description: An optional identifier to prepend to each
+                              key in the ConfigMap. Must be a C_IDENTIFIER.
+                            type: string
+                          secretRef:
+                            description: The Secret to select from
+                            properties:
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                  TODO: Add other useful fields. apiVersion, kind,
+                                  uid?'
+                                type: string
+                              optional:
+                                description: Specify whether the Secret must be defined
+                                type: boolean
+                            type: object
+                        type: object
+                      type: array
+                    image:
+                      description: Image is the container image to use. Overrides
+                        Spec.Image if set.
+                      type: string
+                    labels:
+                      additionalProperties:
+                        type: string
+                      description: Labels are the Kubernetes labels to be added to
+                        the pod.
+                      type: object
+                    replicas:
+                      description: Number of compute instances
+                      format: int32
+                      type: integer
+                    version:
+                      type: string
+                  type: object
+                status:
+                  description: DatafuseComputeSetStatus defines the observed state
+                    of DatafuseComputeSet
+                  properties:
+                    replicas:
+                      description: 'INSERT ADDITIONAL STATUS FIELD - define observed
+                        state of cluster Important: Run "make" to regenerate code
+                        after modifying this file'
+                      format: int32
+                      type: integer
+                    selector:
+                      type: string
+                  type: object
+              type: object
+            version:
+              type: string
+            workers:
+              description: DatafuseComputeSet is the Schema for the datafusecomputesets
+                API
+              properties:
+                apiVersion:
+                  description: 'APIVersion defines the versioned schema of this representation
+                    of an object. Servers should convert recognized schemas to the
+                    latest internal value, and may reject unrecognized values. More
+                    info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+                  type: string
+                kind:
+                  description: 'Kind is a string value representing the REST resource
+                    this object represents. Servers may infer this from the endpoint
+                    the client submits requests to. Cannot be updated. In CamelCase.
+                    More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                  type: string
+                metadata:
+                  type: object
+                spec:
+                  description: DatafuseComputeSetSpec defines the desired state of
+                    DatafuseComputeSet
+                  properties:
+                    cores:
+                      format: int32
+                      minimum: 1
+                      type: integer
+                    envFrom:
+                      description: EnvFrom is a list of sources to populate environment
+                        variables in the container.
+                      items:
+                        description: EnvFromSource represents the source of a set
+                          of ConfigMaps
+                        properties:
+                          configMapRef:
+                            description: The ConfigMap to select from
+                            properties:
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                  TODO: Add other useful fields. apiVersion, kind,
+                                  uid?'
+                                type: string
+                              optional:
+                                description: Specify whether the ConfigMap must be
+                                  defined
+                                type: boolean
+                            type: object
+                          prefix:
+                            description: An optional identifier to prepend to each
+                              key in the ConfigMap. Must be a C_IDENTIFIER.
+                            type: string
+                          secretRef:
+                            description: The Secret to select from
+                            properties:
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                  TODO: Add other useful fields. apiVersion, kind,
+                                  uid?'
+                                type: string
+                              optional:
+                                description: Specify whether the Secret must be defined
+                                type: boolean
+                            type: object
+                        type: object
+                      type: array
+                    image:
+                      description: Image is the container image to use. Overrides
+                        Spec.Image if set.
+                      type: string
+                    labels:
+                      additionalProperties:
+                        type: string
+                      description: Labels are the Kubernetes labels to be added to
+                        the pod.
+                      type: object
+                    replicas:
+                      description: Number of compute instances
+                      format: int32
+                      type: integer
+                    version:
+                      type: string
+                  type: object
+                status:
+                  description: DatafuseComputeSetStatus defines the observed state
+                    of DatafuseComputeSet
+                  properties:
+                    replicas:
+                      description: 'INSERT ADDITIONAL STATUS FIELD - define observed
+                        state of cluster Important: Run "make" to regenerate code
+                        after modifying this file'
+                      format: int32
+                      type: integer
+                    selector:
+                      type: string
+                  type: object
+              type: object
+          type: object
+        status:
+          description: DatafuseComputeGroupStatus defines the observed state of DatafuseComputeGroup
+          properties:
+            readyleaders:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              items:
+                description: DatafuseComputeInstance is the Schema for the datafusecomputeinstances
+                  API
+                properties:
+                  apiVersion:
+                    description: 'APIVersion defines the versioned schema of this
+                      representation of an object. Servers should convert recognized
+                      schemas to the latest internal value, and may reject unrecognized
+                      values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+                    type: string
+                  kind:
+                    description: 'Kind is a string value representing the REST resource
+                      this object represents. Servers may infer this from the endpoint
+                      the client submits requests to. Cannot be updated. In CamelCase.
+                      More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                    type: string
+                  metadata:
+                    type: object
+                  spec:
+                    description: DatafuseComputeInstanceSpec defines the desired state
+                      of DatafuseComputeInstance
+                    properties:
+                      cores:
+                        format: int32
+                        minimum: 1
+                        type: integer
+                      envFrom:
+                        description: EnvFrom is a list of sources to populate environment
+                          variables in the container.
+                        items:
+                          description: EnvFromSource represents the source of a set
+                            of ConfigMaps
+                          properties:
+                            configMapRef:
+                              description: The ConfigMap to select from
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                                optional:
+                                  description: Specify whether the ConfigMap must
+                                    be defined
+                                  type: boolean
+                              type: object
+                            prefix:
+                              description: An optional identifier to prepend to each
+                                key in the ConfigMap. Must be a C_IDENTIFIER.
+                              type: string
+                            secretRef:
+                              description: The Secret to select from
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                                optional:
+                                  description: Specify whether the Secret must be
+                                    defined
+                                  type: boolean
+                              type: object
+                          type: object
+                        type: array
+                      image:
+                        description: Image is the container image to use. Overrides
+                          Spec.Image if set.
+                        type: string
+                      labels:
+                        additionalProperties:
+                          type: string
+                        description: Labels are the Kubernetes labels to be added
+                          to the pod.
+                        type: object
+                      version:
+                        type: string
+                    type: object
+                  status:
+                    description: DatafuseComputeInstanceStatus defines the observed
+                      state of DatafuseComputeInstance
+                    type: object
+                type: object
+              type: array
+          type: object
+      type: object
+  version: v1
+  versions:
+  - name: v1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
