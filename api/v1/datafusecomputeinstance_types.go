@@ -76,6 +76,34 @@ type DatafuseComputeInstanceSpec struct {
 	// +kubebuilder:validation:Maximum=10
 	// kubebuilder:validation:Optional
 	Priority *int32 `json:"priority,omitempty"`
+	// Port open to Mysql Client connection
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=3307
+	// kubebuilder:validation:Optional
+	MysqlPort *int32 `json:"mysqlport,omitempty"`
+	// Port open to Clickhouse Client connection
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=9000
+	// kubebuilder:validation:Optional
+	ClickhousePort *int32 `json:"clickhouseport,omitempty"`
+	// Port for warp HTTP connection, can get cluster infomation and support to add/remove port
+	// We also use HTTP port for health check and readiness check
+	// example: https://github.com/datafuselabs/datafuse/blob/master/fusequery/example/cluster.sh
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=8080
+	// kubebuilder:validation:Optional
+	HTTPPort *int32 `json:"httpport,omitempty"`
+	// Port for gRPC communication
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=9090
+	// kubebuilder:validation:Optional
+	RPCPort *int32 `json:"rpcport,omitempty"`
+	// Port for metrics exporter
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=7070
+	// kubebuilder:validation:Optional
+	MetricsPort *int32 `json:"metricsport,omitempty"`
+
 }
 
 // DatafuseComputeInstanceStatus defines the observed state of DatafuseComputeInstance

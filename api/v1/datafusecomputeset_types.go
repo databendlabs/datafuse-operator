@@ -39,10 +39,6 @@ type DatafuseComputeSetSpec struct {
 	// +kubebuilder:validation:Default=latest
 	// +kubebuilder:validation:Optional
 	Version		*string	`json:"version,omitempty"`
-	// +kubebuilder:validation:Type=string
-	// +kubebuilder:validation:Default=default
-	// +kubebuilder:validation:Optional
-	Namespace *string	`json:"namespace,omitempty"`
 }
 
 // DatafuseComputeSetStatus defines the observed state of DatafuseComputeSet

@@ -58,6 +58,10 @@ spec:
                   description: DatafuseComputeSetSpec defines the desired state of
                     DatafuseComputeSet
                   properties:
+                    clickhouseport:
+                      description: Port open to Clickhouse Client connection kubebuilder:validation:Optional
+                      format: int32
+                      type: integer
                     coreLimit:
                       description: CoreLimit specifies a hard limit on CPU cores for
                         the pod.
@@ -107,6 +111,13 @@ spec:
                             type: object
                         type: object
                       type: array
+                    httpport:
+                      description: 'Port for warp HTTP connection, can get cluster
+                        infomation and support to add/remove port We also use HTTP
+                        port for health check and readiness check example: https://github.com/datafuselabs/datafuse/blob/master/fusequery/example/cluster.sh
+                        kubebuilder:validation:Optional'
+                      format: int32
+                      type: integer
                     image:
                       description: Image is the container image to use. Overrides
                         Spec.Image if set.
@@ -127,8 +138,14 @@ spec:
                       format: int32
                       minimum: 1
                       type: integer
-                    namespace:
-                      type: string
+                    metricsport:
+                      description: Port for metrics exporter kubebuilder:validation:Optional
+                      format: int32
+                      type: integer
+                    mysqlport:
+                      description: Port open to Mysql Client connection kubebuilder:validation:Optional
+                      format: int32
+                      type: integer
                     priority:
                       description: Priority range from 1 - 10 inclusive, higher priority
                         means more workload will be distributed to the instance kubebuilder:validation:Optional
@@ -140,6 +157,10 @@ spec:
                       description: Number of compute instances
                       format: int32
                       minimum: 0
+                      type: integer
+                    rpcport:
+                      description: Port for gRPC communication kubebuilder:validation:Optional
+                      format: int32
                       type: integer
                     version:
                       type: string
@@ -187,6 +208,10 @@ spec:
                   description: DatafuseComputeSetSpec defines the desired state of
                     DatafuseComputeSet
                   properties:
+                    clickhouseport:
+                      description: Port open to Clickhouse Client connection kubebuilder:validation:Optional
+                      format: int32
+                      type: integer
                     coreLimit:
                       description: CoreLimit specifies a hard limit on CPU cores for
                         the pod.
@@ -236,6 +261,13 @@ spec:
                             type: object
                         type: object
                       type: array
+                    httpport:
+                      description: 'Port for warp HTTP connection, can get cluster
+                        infomation and support to add/remove port We also use HTTP
+                        port for health check and readiness check example: https://github.com/datafuselabs/datafuse/blob/master/fusequery/example/cluster.sh
+                        kubebuilder:validation:Optional'
+                      format: int32
+                      type: integer
                     image:
                       description: Image is the container image to use. Overrides
                         Spec.Image if set.
@@ -256,8 +288,14 @@ spec:
                       format: int32
                       minimum: 1
                       type: integer
-                    namespace:
-                      type: string
+                    metricsport:
+                      description: Port for metrics exporter kubebuilder:validation:Optional
+                      format: int32
+                      type: integer
+                    mysqlport:
+                      description: Port open to Mysql Client connection kubebuilder:validation:Optional
+                      format: int32
+                      type: integer
                     priority:
                       description: Priority range from 1 - 10 inclusive, higher priority
                         means more workload will be distributed to the instance kubebuilder:validation:Optional
@@ -269,6 +307,10 @@ spec:
                       description: Number of compute instances
                       format: int32
                       minimum: 0
+                      type: integer
+                    rpcport:
+                      description: Port for gRPC communication kubebuilder:validation:Optional
+                      format: int32
                       type: integer
                     version:
                       type: string
