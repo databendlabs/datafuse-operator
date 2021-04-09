@@ -31,35 +31,51 @@ const (
 
 // DatafuseComputeInstanceSpec defines the desired state of DatafuseComputeInstance
 type DatafuseComputeInstanceSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Default=latest
+	// +kubebuilder:validation:Optional
 	Version *string `json:"version,omitempty"`
 	// Num of cpus for the instance
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=1
 	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Required
 	Cores *int32 `json:"cores,omitempty"`
 	// CoreLimit specifies a hard limit on CPU cores for the pod.
-	// +Optional
-	CoreLimit *string `json:"coreLimit,omitempty"`
-	// Memory is the amount of memory to request for the pod.
-	// +Optional.
-	Memory *string `json:"memory,omitempty"`
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=1
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Optional
+	CoreLimit *int32 `json:"coreLimit,omitempty"`
+	// Memory is the amount of memory to request for the pod. in MiB
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=512
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Optional
+	Memory *int32 `json:"memory,omitempty"`
 	// EnvFrom is a list of sources to populate environment variables in the container.
-	// +optional
+	// +kubebuilder:validation:Optional
 	EnvFrom []apiv1.EnvFromSource `json:"envFrom,omitempty"`
 	// Labels are the Kubernetes labels to be added to the pod.
-	// +optional
+	// +kubebuilder:validation:Optional
 	Labels map[string]string `json:"labels,omitempty"`
 	// Image is the container image to use. Overrides Spec.Image if set.
-	// +optional
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Default=datafuselabs/fuse-query
+	// +kubebuilder:validation:Optional
 	Image *string `json:"image,omitempty"`
 	// ImagePullPolicy is the image pull policy for the driver, executor, and init-container.
-	// +Optional.
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Default=Always
+	// +kubebuilder:validation:Optional
 	ImagePullPolicy *string `json:"imagePullPolicy,omitempty"`
 	// Priority range from 1 - 10 inclusive, higher priority means more workload will be distributed to the instance
-	// +Optional.
-	Priority *string `json:"priority,omitempty"`
-	Namespace *string	`json:"namespace,omitempty"`
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=1
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Maximum=10
+	// kubebuilder:validation:Optional
+	Priority *int32 `json:"priority,omitempty"`
 }
 
 // DatafuseComputeInstanceStatus defines the observed state of DatafuseComputeInstance
@@ -70,7 +86,6 @@ type DatafuseComputeInstanceStatus struct {
 }
 
 // +kubebuilder:object:root=true
-
 // DatafuseComputeInstance is the Schema for the datafusecomputeinstances API
 type DatafuseComputeInstance struct {
 	metav1.TypeMeta   `json:",inline"`

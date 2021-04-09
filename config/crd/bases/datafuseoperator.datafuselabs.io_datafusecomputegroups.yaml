@@ -61,7 +61,9 @@ spec:
                     coreLimit:
                       description: CoreLimit specifies a hard limit on CPU cores for
                         the pod.
-                      type: string
+                      format: int32
+                      minimum: 1
+                      type: integer
                     cores:
                       description: Num of cpus for the instance
                       format: int32
@@ -121,17 +123,23 @@ spec:
                       type: object
                     memory:
                       description: Memory is the amount of memory to request for the
-                        pod.
-                      type: string
+                        pod. in MiB
+                      format: int32
+                      minimum: 1
+                      type: integer
                     namespace:
                       type: string
                     priority:
                       description: Priority range from 1 - 10 inclusive, higher priority
-                        means more workload will be distributed to the instance
-                      type: string
+                        means more workload will be distributed to the instance kubebuilder:validation:Optional
+                      format: int32
+                      maximum: 10
+                      minimum: 1
+                      type: integer
                     replicas:
                       description: Number of compute instances
                       format: int32
+                      minimum: 0
                       type: integer
                     version:
                       type: string
@@ -182,7 +190,9 @@ spec:
                     coreLimit:
                       description: CoreLimit specifies a hard limit on CPU cores for
                         the pod.
-                      type: string
+                      format: int32
+                      minimum: 1
+                      type: integer
                     cores:
                       description: Num of cpus for the instance
                       format: int32
@@ -242,17 +252,23 @@ spec:
                       type: object
                     memory:
                       description: Memory is the amount of memory to request for the
-                        pod.
-                      type: string
+                        pod. in MiB
+                      format: int32
+                      minimum: 1
+                      type: integer
                     namespace:
                       type: string
                     priority:
                       description: Priority range from 1 - 10 inclusive, higher priority
-                        means more workload will be distributed to the instance
-                      type: string
+                        means more workload will be distributed to the instance kubebuilder:validation:Optional
+                      format: int32
+                      maximum: 10
+                      minimum: 1
+                      type: integer
                     replicas:
                       description: Number of compute instances
                       format: int32
+                      minimum: 0
                       type: integer
                     version:
                       type: string

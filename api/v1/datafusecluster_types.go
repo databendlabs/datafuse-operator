@@ -31,6 +31,9 @@ type DatafuseClusterSpec struct {
 	// Define a set of compute groups belongs to the cluster
 	ComputeGroups []*DatafuseComputeGroup `json:"computegroup,omitempty"`
 	// Fuse Query and Fuse Store will share the same version
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Default=latest
+	// +kubebuilder:validation:Optional
 	Version       *string                  `json:"version,omitempty"`
 }
 

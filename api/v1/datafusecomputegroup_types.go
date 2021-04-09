@@ -39,7 +39,13 @@ type DatafuseComputeGroupSpec struct {
 	// Number of workers per cluster, workers are identical
 	// +optional
 	ComputeWorkers DatafuseComputeSet `json:"workers,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Default=latest
+	// +optional
 	Version *string `json:"version,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Default=default
+	// +kubebuilder:validation:Optional
 	Namespace *string	`json:"namespace,omitempty"`
 }
 

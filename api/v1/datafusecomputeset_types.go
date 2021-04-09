@@ -29,9 +29,19 @@ type DatafuseComputeSetSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Number of compute instances
+	// +kubebuilder:validation:Type=integer
+	// +kubebuilder:validation:Default=1
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Optional
 	Replicas *int32 `json:"replicas,omitempty"`
 	DatafuseComputeInstanceSpec  `json:",inline"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Default=latest
+	// +kubebuilder:validation:Optional
 	Version		*string	`json:"version,omitempty"`
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Default=default
+	// +kubebuilder:validation:Optional
 	Namespace *string	`json:"namespace,omitempty"`
 }
 
