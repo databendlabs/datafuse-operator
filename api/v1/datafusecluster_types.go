@@ -30,14 +30,16 @@ type DatafuseClusterSpec struct {
 
 	// Define a set of compute groups belongs to the cluster
 	ComputeGroups []*DatafuseComputeGroup `json:"computegroup,omitempty"`
-	Version       string                  `json:"version,omitempty"`
+	// Fuse Query and Fuse Store will share the same version
+	Version       *string                  `json:"version,omitempty"`
 }
 
 // DatafuseClusterStatus defines the observed state of DatafuseCluster
 type DatafuseClusterStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	ActiveComputeGroups []*DatafuseComputeGroup `json:"active,omitempty"`
+	// state of each compute group. map from namespace to compute group
+	ComputeGroupStates map[string]ComputeGroupState	`json:"computegroupstates",omitempty`
 }
 
 // +kubebuilder:object:root=true

@@ -35,7 +35,11 @@ spec:
         spec:
           description: DatafuseComputeInstanceSpec defines the desired state of DatafuseComputeInstance
           properties:
+            coreLimit:
+              description: CoreLimit specifies a hard limit on CPU cores for the pod.
+              type: string
             cores:
+              description: Num of cpus for the instance
               format: int32
               minimum: 1
               type: integer
@@ -77,17 +81,36 @@ spec:
               description: Image is the container image to use. Overrides Spec.Image
                 if set.
               type: string
+            imagePullPolicy:
+              description: ImagePullPolicy is the image pull policy for the driver,
+                executor, and init-container.
+              type: string
             labels:
               additionalProperties:
                 type: string
               description: Labels are the Kubernetes labels to be added to the pod.
               type: object
+            memory:
+              description: Memory is the amount of memory to request for the pod.
+              type: string
+            namespace:
+              type: string
+            priority:
+              description: Priority range from 1 - 10 inclusive, higher priority means
+                more workload will be distributed to the instance
+              type: string
             version:
               type: string
           type: object
         status:
           description: DatafuseComputeInstanceStatus defines the observed state of
             DatafuseComputeInstance
+          properties:
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
           type: object
       type: object
   version: v1

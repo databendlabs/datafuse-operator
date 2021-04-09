@@ -20,6 +20,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type ComputeGroupState string
+const (
+	ComputeGroupDeployed ComputeGroupStatus = "Ready"
+	ComputeGroupPending	 ComputeGroupStatus = "Pending"
+)
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
@@ -28,19 +33,23 @@ type DatafuseComputeGroupSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of DatafuseComputeGroup. Edit DatafuseComputeGroup_types.go to remove/update
+	// ComputeLeaders will incorporate all workers to form a cluster, designed for HA purpose
+	// For performance consideration, suggest to set at most 3 to 5 leaders
 	ComputeLeaders DatafuseComputeSet`json:"leaders,omitempty"`
+	// Number of workers per cluster, workers are identical
 	// +optional
 	ComputeWorkers DatafuseComputeSet `json:"workers,omitempty"`
-	// +optional
-	Version string `json:"version,omitempty"`
+	Version *string `json:"version,omitempty"`
+	Namespace *string	`json:"namespace,omitempty"`
 }
 
 // DatafuseComputeGroupStatus defines the observed state of DatafuseComputeGroup
 type DatafuseComputeGroupStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	ReadyComputeLeaders []*DatafuseComputeInstance `json:"readyleaders,omitempty"`
+	ReadyComputeLeaders map[string]ComputeInstanceState `json:"readyleaders,omitempty"`
+	ReadyComputeWorkers	map[string]ComputeInstanceState `json:"readyworkers,omitempty"`
+	status	ComputeGroupState							`json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true

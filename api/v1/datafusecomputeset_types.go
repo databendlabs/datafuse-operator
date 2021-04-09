@@ -31,6 +31,8 @@ type DatafuseComputeSetSpec struct {
 	// Number of compute instances
 	Replicas *int32 `json:"replicas,omitempty"`
 	DatafuseComputeInstanceSpec  `json:",inline"`
+	Version		*string	`json:"version,omitempty"`
+	Namespace *string	`json:"namespace,omitempty"`
 }
 
 // DatafuseComputeSetStatus defines the observed state of DatafuseComputeSet
@@ -39,7 +41,7 @@ type DatafuseComputeSetStatus struct {
 	// Important: Run "make" to regenerate code after modifying this file
     Replicas int32 `json:"replicas,omitempty"`
     Selector string `json:"selector,omitempty"` // this must be the string form of the selector
-
+	InstancesStatus	map[string]ComputeInstanceState `json:"instancestatus,omitempty"` // map from compute instance pod name to state
 }
 
 // +kubebuilder:object:root=true

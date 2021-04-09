@@ -36,8 +36,9 @@ spec:
           description: DatafuseComputeGroupSpec defines the desired state of DatafuseComputeGroup
           properties:
             leaders:
-              description: Foo is an example field of DatafuseComputeGroup. Edit DatafuseComputeGroup_types.go
-                to remove/update
+              description: ComputeLeaders will incorporate all workers to form a cluster,
+                designed for HA purpose For performance consideration, suggest to
+                set at most 3 to 5 leaders
               properties:
                 apiVersion:
                   description: 'APIVersion defines the versioned schema of this representation
@@ -57,7 +58,12 @@ spec:
                   description: DatafuseComputeSetSpec defines the desired state of
                     DatafuseComputeSet
                   properties:
+                    coreLimit:
+                      description: CoreLimit specifies a hard limit on CPU cores for
+                        the pod.
+                      type: string
                     cores:
+                      description: Num of cpus for the instance
                       format: int32
                       minimum: 1
                       type: integer
@@ -103,12 +109,26 @@ spec:
                       description: Image is the container image to use. Overrides
                         Spec.Image if set.
                       type: string
+                    imagePullPolicy:
+                      description: ImagePullPolicy is the image pull policy for the
+                        driver, executor, and init-container.
+                      type: string
                     labels:
                       additionalProperties:
                         type: string
                       description: Labels are the Kubernetes labels to be added to
                         the pod.
                       type: object
+                    memory:
+                      description: Memory is the amount of memory to request for the
+                        pod.
+                      type: string
+                    namespace:
+                      type: string
+                    priority:
+                      description: Priority range from 1 - 10 inclusive, higher priority
+                        means more workload will be distributed to the instance
+                      type: string
                     replicas:
                       description: Number of compute instances
                       format: int32
@@ -120,6 +140,10 @@ spec:
                   description: DatafuseComputeSetStatus defines the observed state
                     of DatafuseComputeSet
                   properties:
+                    instancestatus:
+                      additionalProperties:
+                        type: string
+                      type: object
                     replicas:
                       description: 'INSERT ADDITIONAL STATUS FIELD - define observed
                         state of cluster Important: Run "make" to regenerate code
@@ -130,11 +154,12 @@ spec:
                       type: string
                   type: object
               type: object
+            namespace:
+              type: string
             version:
               type: string
             workers:
-              description: DatafuseComputeSet is the Schema for the datafusecomputesets
-                API
+              description: Number of workers per cluster, workers are identical
               properties:
                 apiVersion:
                   description: 'APIVersion defines the versioned schema of this representation
@@ -154,7 +179,12 @@ spec:
                   description: DatafuseComputeSetSpec defines the desired state of
                     DatafuseComputeSet
                   properties:
+                    coreLimit:
+                      description: CoreLimit specifies a hard limit on CPU cores for
+                        the pod.
+                      type: string
                     cores:
+                      description: Num of cpus for the instance
                       format: int32
                       minimum: 1
                       type: integer
@@ -200,12 +230,26 @@ spec:
                       description: Image is the container image to use. Overrides
                         Spec.Image if set.
                       type: string
+                    imagePullPolicy:
+                      description: ImagePullPolicy is the image pull policy for the
+                        driver, executor, and init-container.
+                      type: string
                     labels:
                       additionalProperties:
                         type: string
                       description: Labels are the Kubernetes labels to be added to
                         the pod.
                       type: object
+                    memory:
+                      description: Memory is the amount of memory to request for the
+                        pod.
+                      type: string
+                    namespace:
+                      type: string
+                    priority:
+                      description: Priority range from 1 - 10 inclusive, higher priority
+                        means more workload will be distributed to the instance
+                      type: string
                     replicas:
                       description: Number of compute instances
                       format: int32
@@ -217,6 +261,10 @@ spec:
                   description: DatafuseComputeSetStatus defines the observed state
                     of DatafuseComputeSet
                   properties:
+                    instancestatus:
+                      additionalProperties:
+                        type: string
+                      type: object
                     replicas:
                       description: 'INSERT ADDITIONAL STATUS FIELD - define observed
                         state of cluster Important: Run "make" to regenerate code
@@ -232,93 +280,18 @@ spec:
           description: DatafuseComputeGroupStatus defines the observed state of DatafuseComputeGroup
           properties:
             readyleaders:
+              additionalProperties:
+                type: string
               description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
                 of cluster Important: Run "make" to regenerate code after modifying
                 this file'
-              items:
-                description: DatafuseComputeInstance is the Schema for the datafusecomputeinstances
-                  API
-                properties:
-                  apiVersion:
-                    description: 'APIVersion defines the versioned schema of this
-                      representation of an object. Servers should convert recognized
-                      schemas to the latest internal value, and may reject unrecognized
-                      values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
-                    type: string
-                  kind:
-                    description: 'Kind is a string value representing the REST resource
-                      this object represents. Servers may infer this from the endpoint
-                      the client submits requests to. Cannot be updated. In CamelCase.
-                      More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-                    type: string
-                  metadata:
-                    type: object
-                  spec:
-                    description: DatafuseComputeInstanceSpec defines the desired state
-                      of DatafuseComputeInstance
-                    properties:
-                      cores:
-                        format: int32
-                        minimum: 1
-                        type: integer
-                      envFrom:
-                        description: EnvFrom is a list of sources to populate environment
-                          variables in the container.
-                        items:
-                          description: EnvFromSource represents the source of a set
-                            of ConfigMaps
-                          properties:
-                            configMapRef:
-                              description: The ConfigMap to select from
-                              properties:
-                                name:
-                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                    TODO: Add other useful fields. apiVersion, kind,
-                                    uid?'
-                                  type: string
-                                optional:
-                                  description: Specify whether the ConfigMap must
-                                    be defined
-                                  type: boolean
-                              type: object
-                            prefix:
-                              description: An optional identifier to prepend to each
-                                key in the ConfigMap. Must be a C_IDENTIFIER.
-                              type: string
-                            secretRef:
-                              description: The Secret to select from
-                              properties:
-                                name:
-                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                    TODO: Add other useful fields. apiVersion, kind,
-                                    uid?'
-                                  type: string
-                                optional:
-                                  description: Specify whether the Secret must be
-                                    defined
-                                  type: boolean
-                              type: object
-                          type: object
-                        type: array
-                      image:
-                        description: Image is the container image to use. Overrides
-                          Spec.Image if set.
-                        type: string
-                      labels:
-                        additionalProperties:
-                          type: string
-                        description: Labels are the Kubernetes labels to be added
-                          to the pod.
-                        type: object
-                      version:
-                        type: string
-                    type: object
-                  status:
-                    description: DatafuseComputeInstanceStatus defines the observed
-                      state of DatafuseComputeInstance
-                    type: object
-                type: object
-              type: array
+              type: object
+            readyworkers:
+              additionalProperties:
+                type: string
+              type: object
+            status:
+              type: string
           type: object
       type: object
   version: v1
