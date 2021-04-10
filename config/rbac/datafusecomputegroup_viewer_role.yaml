@@ -1,0 +1,20 @@
+# permissions for end users to view datafusecomputegroups.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: datafusecomputegroup-viewer-role
+rules:
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputegroups
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafusecomputegroups/status
+  verbs:
+  - get

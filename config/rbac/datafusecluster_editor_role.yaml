@@ -1,0 +1,24 @@
+# permissions for end users to edit datafuseclusters.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: datafusecluster-editor-role
+rules:
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafuseclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - datafuseoperator.datafuselabs.io
+  resources:
+  - datafuseclusters/status
+  verbs:
+  - get
