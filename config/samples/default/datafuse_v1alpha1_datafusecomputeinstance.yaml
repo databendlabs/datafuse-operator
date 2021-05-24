@@ -1,0 +1,7 @@
+apiVersion: datafuse.datafuselabs.io/v1alpha1
+kind: DatafuseComputeInstance
+metadata:
+  name: datafusecomputeinstance-defaault
+spec:
+  # Add fields here
+  cores: 1

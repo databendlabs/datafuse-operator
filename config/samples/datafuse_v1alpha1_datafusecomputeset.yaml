@@ -1,0 +1,8 @@
+apiVersion: datafuse.datafuselabs.io/v1alpha1
+kind: DatafuseComputeSet
+metadata:
+  name: datafusecomputeset-sample
+spec:
+  # Add fields here
+  replicas: 1
+  cores: 1

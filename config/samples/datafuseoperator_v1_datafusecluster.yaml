@@ -1,7 +1,0 @@
-apiVersion: datafuseoperator.datafuselabs.io/v1
-kind: DatafuseCluster
-metadata:
-  name: datafusecluster-sample
-spec:
-  # Add fields here
-  foo: bar

@@ -1,0 +1,6 @@
+apiVersion: datafuse.datafuselabs.io/v1alpha1
+kind: DatafuseComputeSet
+metadata:
+  name: datafusecomputeset-sample
+spec:
+  cores: 3

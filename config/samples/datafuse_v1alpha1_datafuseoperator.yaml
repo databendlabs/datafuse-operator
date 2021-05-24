@@ -1,0 +1,7 @@
+apiVersion: datafuse.datafuselabs.io/v1alpha1
+kind: DatafuseOperator
+metadata:
+  name: datafuseoperator-sample
+spec:
+  # Add fields here
+  foo: bar

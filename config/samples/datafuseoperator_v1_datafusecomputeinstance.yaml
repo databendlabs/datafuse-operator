@@ -1,7 +1,0 @@
-apiVersion: datafuseoperator.datafuselabs.io/v1
-kind: DatafuseComputeInstance
-metadata:
-  name: datafusecomputeinstance-sample
-spec:
-  # Add fields here
-  foo: bar
