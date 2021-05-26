@@ -1,3 +1,6 @@
+// Copyright 2020-2021 The Datafuse Authors.
+//
+// SPDX-License-Identifier: Apache-2.0.
 package framework
 
 import (
@@ -12,18 +15,20 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 	v1 "k8s.io/api/core/v1"
+	apiclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 )
 
 // Framework contains all components needed to run e2e tests
 // Framework contains all components required to run the test framework.
 type Framework struct {
-	KubeClient     kubernetes.Interface
-	Client         crdclientset.Interface
-	Namespace      *v1.Namespace
-	OperatorPod    *v1.Pod
-	DefaultTimeout time.Duration
-	MasterHost     string
+	KubeClient      kubernetes.Interface
+	Client          crdclientset.Interface
+	Namespace       *v1.Namespace
+	OperatorPod     *v1.Pod
+	APIServerClient apiclient.Interface
+	DefaultTimeout  time.Duration
+	MasterHost      string
 }
 
 func New(ns, sparkNs, kubeconfig, opImage string, opImagePullPolicy string) (*Framework, error) {
@@ -33,6 +38,10 @@ func New(ns, sparkNs, kubeconfig, opImage string, opImagePullPolicy string) (*Fr
 		return nil, errors.Wrap(err, "cannot fetch kube-config")
 	}
 	k8sCli, err := datafuseutils.GetK8sClient()
+	if err != nil {
+		return nil, errors.Wrap(err, "creating new kube-client failed")
+	}
+	apiCli, err := apiclient.NewForConfig(config)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating new kube-client failed")
 	}
@@ -47,11 +56,12 @@ func New(ns, sparkNs, kubeconfig, opImage string, opImagePullPolicy string) (*Fr
 	}
 
 	f := &Framework{
-		MasterHost:     config.Host,
-		KubeClient:     k8sCli,
-		Client:         client,
-		Namespace:      namespace,
-		DefaultTimeout: 5 * time.Minute,
+		MasterHost:      config.Host,
+		KubeClient:      k8sCli,
+		Client:          client,
+		Namespace:       namespace,
+		APIServerClient: apiCli,
+		DefaultTimeout:  5 * time.Minute,
 	}
 
 	return f, nil
@@ -59,13 +69,13 @@ func New(ns, sparkNs, kubeconfig, opImage string, opImagePullPolicy string) (*Fr
 
 type FinalizerFn func() error
 
-type TestContext struct {
+type TestCtx struct {
 	ID         string
 	cleanUpFns []FinalizerFn
 }
 
-func (f *Framework) NewTestCtx(t *testing.T) TestContext {
-	return TestContext{ID: GenerateTestID(time.Now().Unix(), t)}
+func (f *Framework) NewTestCtx(t *testing.T) TestCtx {
+	return TestCtx{ID: GenerateTestID(time.Now().Unix(), t)}
 }
 
 func GenerateTestID(timestamp int64, t *testing.T) string {
@@ -85,11 +95,11 @@ func GenerateTestID(timestamp int64, t *testing.T) string {
 // based on the premise that every new object also appends a new finalizerFn on
 // cleanUpFns. This can e.g. be used to create multiple namespaces in the same
 // test context.
-func (ctx *TestContext) GetObjID() string {
+func (ctx *TestCtx) GetObjID() string {
 	return ctx.ID + "-" + strconv.Itoa(len(ctx.cleanUpFns))
 }
 
-func (ctx *TestContext) Cleanup(t *testing.T) {
+func (ctx *TestCtx) Cleanup(t *testing.T) {
 	var eg errgroup.Group
 
 	for i := len(ctx.cleanUpFns) - 1; i >= 0; i-- {
@@ -101,6 +111,6 @@ func (ctx *TestContext) Cleanup(t *testing.T) {
 	}
 }
 
-func (ctx *TestContext) AddFinalizerFn(fn FinalizerFn) {
+func (ctx *TestCtx) AddFinalizerFn(fn FinalizerFn) {
 	ctx.cleanUpFns = append(ctx.cleanUpFns, fn)
 }

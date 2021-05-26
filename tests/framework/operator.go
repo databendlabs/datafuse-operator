@@ -1,9 +1,11 @@
+// Copyright 2020-2021 The Datafuse Authors.
+//
+// SPDX-License-Identifier: Apache-2.0.
 package framework
 
 import (
 	"context"
 	"fmt"
-	"os/exec"
 
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -13,27 +15,6 @@ import (
 	crdclientset "datafuselabs.io/datafuse-operator/pkg/client/clientset/versioned"
 	testutils "datafuselabs.io/datafuse-operator/tests/utils"
 )
-
-// crdDir is the location of the target CRD files
-func InstallCRDs() error {
-	e := exec.Command("make", "install")
-	e.Dir = "../../"
-	err := e.Run()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func UninstallCRDs() error {
-	e := exec.Command("make", "uninstall")
-	e.Dir = "../../"
-	err := e.Run()
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 func MakeDatafuseOperatorFromYaml(pathToYaml string) (*v1alpha1.DatafuseOperator, error) {
 	manifest, err := testutils.PathToOSFile(pathToYaml)

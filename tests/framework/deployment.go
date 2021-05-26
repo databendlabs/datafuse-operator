@@ -1,3 +1,6 @@
+// Copyright 2020-2021 The Datafuse Authors.
+//
+// SPDX-License-Identifier: Apache-2.0.
 package framework
 
 import (
@@ -5,7 +8,6 @@ import (
 	"fmt"
 	"time"
 
-	testutils "datafuselabs.io/datafuse-operator/tests/utils"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -15,9 +17,16 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-// TODO add tests
+func GetDeployment(kubeCilent kubernetes.Interface, ns, name string) (*appsv1.Deployment, error) {
+	return kubeCilent.AppsV1().Deployments(ns).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func UpdateDeployment(kubeCilent kubernetes.Interface, deployment *appsv1.Deployment) (*appsv1.Deployment, error) {
+	return kubeCilent.AppsV1().Deployments(deployment.Namespace).Update(context.TODO(), deployment, metav1.UpdateOptions{})
+}
+
 func MakeDeployment(pathToYaml string) (*appsv1.Deployment, error) {
-	manifest, err := testutils.PathToOSFile(pathToYaml)
+	manifest, err := PathToOSFile(pathToYaml)
 	if err != nil {
 		return nil, err
 	}
