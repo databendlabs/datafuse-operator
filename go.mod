@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go v0.81.0 // indirect
 	github.com/Azure/go-autorest/autorest v0.11.18 // indirect
 	github.com/emicklei/go-restful v2.15.0+incompatible // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.5 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
