@@ -12,5 +12,5 @@ Prerequisites:
 e2e tests are written as Go test. All go test techniques apply (e.g. picking what to run, timeout length). Let's say I want to run all tests in "test/e2e/":
 
 ```bash
-$ go test -v ./test/e2e/ --kubeconfig "$HOME/.kube/config" --operator-image=zhihanz/datafuse-operator:latest
+$ go test -v ./tests/e2e/ --kubeconfig "$HOME/.kube/config" --operator-image=zhihanz/datafuse-operator:latest
 ```

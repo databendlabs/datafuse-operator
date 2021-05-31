@@ -784,7 +784,7 @@ spec:
       containers:
       - command:
         - /manager
-        image: zhihanz/controller:latest
+        image: zhihanz/datafuse-operator:latest
         name: manager
         resources:
           limits:

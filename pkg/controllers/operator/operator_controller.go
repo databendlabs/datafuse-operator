@@ -19,6 +19,7 @@ package operator
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -578,36 +579,6 @@ func (oc *OperatorController) ProcessUpdatedOperator(op *v1alpha1.DatafuseOperat
 	return nil
 }
 
-// func (oc *OperatorController) ListValidOperators() []*v1alpha1.DatafuseOperator {
-// 	ret := make([]*v1alpha1.DatafuseOperator, 0)
-// 	if oc.setter.AllNS {
-// 		objs := oc.cachedOperatorInformer[metav1.NamespaceAll].GetStore().List()
-// 		for _, obj := range objs {
-// 			op, ok := obj.(*v1alpha1.DatafuseOperator)
-// 			if !ok {
-// 				continue
-// 			}
-// 			ret = append(ret, op)
-// 		}
-// 	}
-// 	return ret
-// }
-
-// func (oc *OperatorController) ListValidComputeGroups() []*v1alpha1.DatafuseComputeGroup {
-// 	ret := make([]*v1alpha1.DatafuseComputeGroup, 0)
-// 	if oc.setter.AllNS {
-// 		objs := oc.cachedGroupInformer[metav1.NamespaceAll].GetStore().List()
-// 		for _, obj := range objs {
-// 			op, ok := obj.(*v1alpha1.DatafuseComputeGroup)
-// 			if !ok {
-// 				continue
-// 			}
-// 			ret = append(ret, op)
-// 		}
-// 	}
-// 	return ret
-// }
-
 func (oc *OperatorController) processNextComputeGroup() bool {
 	errorHandler := func(obj interface{}, cg *v1alpha1.DatafuseComputeGroup, err error) {
 		opName := fmt.Sprintf("%s/%s", cg.Namespace, cg.Name)
@@ -641,13 +612,19 @@ func (oc *OperatorController) processNextComputeGroup() bool {
 		return true
 	}
 
-	utils.IsComputeGroupCreated(group)
-	err := oc.processNewComputeGroup(group)
-	errorHandler(obj, group, err)
+	if utils.IsComputeGroupCreated(group) {
+		err := oc.processNewComputeGroup(group)
+		errorHandler(obj, group, err)
+	} else {
+		err := oc.processUpdatedComputeGroup(group)
+		errorHandler(obj, group, err)
+	}
+
 	return true
 }
 
 func (oc *OperatorController) processNewComputeGroup(cg *v1alpha1.DatafuseComputeGroup) error {
+	var err error
 	fillName := func(instanceSpec v1alpha1.DatafuseComputeInstanceSpec, basic string) string {
 		if instanceSpec.Name == nil {
 			return basic
@@ -656,17 +633,19 @@ func (oc *OperatorController) processNewComputeGroup(cg *v1alpha1.DatafuseComput
 	}
 	cgCopy := cg.DeepCopy()
 
-	_ = oc.syncComputeGroup(cgCopy, cgCopy.Spec.ComputeLeaders, fillName(cgCopy.Spec.ComputeLeaders.DatafuseComputeInstanceSpec, fmt.Sprintf("%s-leader", cgCopy.GetName())), true)
-	// if err != nil {
-	// 	return err
-	// }
-	for i, worker := range cgCopy.Spec.ComputeWorkers {
-		_ = oc.syncComputeGroup(cgCopy, worker, fillName(worker.DatafuseComputeInstanceSpec, fmt.Sprintf("%s-worker%d", cgCopy.GetName(), i)), false)
-		// if err != nil {
-		// 	return err
-		// }
+	err1 := oc.syncComputeGroup(cgCopy, cgCopy.Spec.ComputeLeaders, fillName(cgCopy.Spec.ComputeLeaders.DatafuseComputeInstanceSpec, fmt.Sprintf("%s-leader", cgCopy.GetName())), true)
+	if err != nil {
+		multierr.Append(err, err1)
 	}
-	return nil
+	log.Info().Msgf("successfully synced group leader %s/%s", cgCopy.Namespace, fmt.Sprintf("%s-leader", cgCopy.GetName()))
+	for i, worker := range cgCopy.Spec.ComputeWorkers {
+		err1 = oc.syncComputeGroup(cgCopy, worker, fillName(worker.DatafuseComputeInstanceSpec, fmt.Sprintf("%s-worker%d", cgCopy.GetName(), i)), false)
+		if err != nil {
+			multierr.Append(err, err1)
+		}
+		log.Info().Msgf("successfully synced group worker %s/%s", cgCopy.Namespace, fmt.Sprintf("%s-worker%d", cgCopy.GetName(), i))
+	}
+	return err
 }
 
 func (oc *OperatorController) syncComputeGroup(cg *v1alpha1.DatafuseComputeGroup,
@@ -762,5 +741,30 @@ func (oc *OperatorController) GetComputeGroupKeys(cg *v1alpha1.DatafuseComputeGr
 }
 
 func (oc *OperatorController) processUpdatedComputeGroup(op *v1alpha1.DatafuseComputeGroup) error {
-	return nil
+	if op.Status.ReadyComputeLeaders == nil && op.Status.ReadyComputeWorkers == nil {
+		err := oc.processNewComputeGroup(op)
+		return err
+	}
+	opCopy := op.DeepCopy()
+	for key := range op.Status.ReadyComputeLeaders {
+		ns, name := strings.SplitN(key, "/", 2)[0], strings.SplitN(key, "/", 2)[1]
+		_, err := oc.deploymentLister.Deployments(ns).Get(name)
+		if err != nil && errors.IsNotFound(err) {
+			opCopy.Status.Status = v1alpha1.ComputeGroupPending
+			delete(opCopy.Status.ReadyComputeLeaders, key)
+		}
+	}
+
+	for key := range op.Status.ReadyComputeWorkers {
+
+		ns, name := strings.SplitN(key, "/", 2)[0], strings.SplitN(key, "/", 2)[1]
+		_, err := oc.deploymentLister.Deployments(ns).Get(name)
+		if err != nil && errors.IsNotFound(err) {
+			opCopy.Status.Status = v1alpha1.ComputeGroupPending
+			delete(opCopy.Status.ReadyComputeWorkers, key)
+		}
+	}
+	oc.client.DatafuseV1alpha1().DatafuseComputeGroups(op.Namespace).Update(context.TODO(), opCopy, metav1.UpdateOptions{})
+
+	return oc.processNewComputeGroup(op)
 }

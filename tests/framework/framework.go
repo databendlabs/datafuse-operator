@@ -22,6 +22,7 @@ import (
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
 
 // Framework contains all components needed to run e2e tests
@@ -32,6 +33,7 @@ type Framework struct {
 	OperatorPod     *v1.Pod
 	APIServerClient apiclient.Interface
 	DefaultTimeout  time.Duration
+	RestConfig      *rest.Config
 	MasterHost      string
 }
 
@@ -60,6 +62,7 @@ func New(kubeconfig, opImage string) (*Framework, error) {
 		KubeClient:      k8sCli,
 		Client:          client,
 		APIServerClient: apiCli,
+		RestConfig:      config,
 		DefaultTimeout:  5 * time.Minute,
 	}
 

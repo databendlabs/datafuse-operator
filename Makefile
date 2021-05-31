@@ -52,7 +52,7 @@ build: generate fmt ## Build manager binary.
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
-docker-build: unit-test integration ## Build docker image with the manager.
+docker-build: unit-test ## Build docker image with the manager.
 	docker build -t ${IMG} .
 
 docker-push: ## Push docker image with the manager.
