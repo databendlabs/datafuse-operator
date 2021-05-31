@@ -26,7 +26,7 @@ func CreateRoleBinding(kubeClient kubernetes.Interface, ns string, relativePath 
 	}
 
 	roleBinding.Namespace = ns
-
+	roleBinding.Subjects[0].Namespace = ns
 	_, err = kubeClient.RbacV1().RoleBindings(ns).Get(context.TODO(), roleBinding.Name, metav1.GetOptions{})
 
 	if err == nil {

@@ -86,6 +86,26 @@ func makePorts(instanceSpec v1alpha1.DatafuseComputeInstanceSpec) []corev1.Conta
 	}
 }
 
+func makeServicePorts(d *appsv1.Deployment) []corev1.ServicePort {
+	ports := []corev1.ServicePort{}
+	for _, port := range d.Spec.Template.Spec.Containers[0].Ports {
+		switch port.Name {
+		case controller.ContainerMetricsPort,
+			controller.ContainerHTTPPort,
+			controller.ContainerRPCPort,
+			controller.ContainerMysqlPort,
+			controller.ContainerClickhousePort:
+			ports = append(ports, corev1.ServicePort{Name: port.Name,
+				Protocol:   corev1.ProtocolTCP,
+				TargetPort: intstr.FromInt(int(port.ContainerPort)),
+				Port:       port.ContainerPort})
+		default:
+			continue
+		}
+	}
+	return ports
+}
+
 func makeEnvs(instanceSpec v1alpha1.DatafuseComputeInstanceSpec) []corev1.EnvVar {
 	return []corev1.EnvVar{
 		{
@@ -147,14 +167,6 @@ func getMilliCPU(cores *int32) int64 {
 	return int64(*cores)*1000 + 300 //allocate some additional resources to avoid cpu race condition
 }
 
-func getByteMemoryFromMB(mb *int32) int64 {
-	if mb == nil {
-		// default will allocate 512mb
-		return 512 * 1024 * 1024
-	}
-	return int64(*mb) * 1024 * 1024
-}
-
 func makeResourceRequirements(instanceSpec v1alpha1.DatafuseComputeInstanceSpec) corev1.ResourceRequirements {
 	fillblank := func(input *string, quant resource.Quantity) resource.Quantity {
 		if input == nil {
@@ -212,6 +224,22 @@ func MakeFuseQueryPod(computeSet *v1alpha1.DatafuseComputeSetSpec, name, namespa
 			Labels:    labels,
 		},
 		Spec: convertInstanceSpecToPodSpec(computeSet.DatafuseComputeInstanceSpec),
+	}
+}
+
+func MakeService(name string, deployment *appsv1.Deployment) *corev1.Service {
+	return &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:            name,
+			Namespace:       deployment.Namespace,
+			Labels:          deployment.Labels,
+			OwnerReferences: deployment.OwnerReferences,
+		},
+		Spec: corev1.ServiceSpec{
+			Selector: deployment.Labels,
+			Ports:    makeServicePorts(deployment),
+			Type:     corev1.ServiceTypeClusterIP,
+		},
 	}
 }
 

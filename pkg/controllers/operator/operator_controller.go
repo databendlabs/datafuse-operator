@@ -31,10 +31,12 @@ import (
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	appsinformers "k8s.io/client-go/informers/apps/v1"
+	coreinformers "k8s.io/client-go/informers/core/v1"
 	client "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	appslisters "k8s.io/client-go/listers/apps/v1"
+	corelisters "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
@@ -53,7 +55,9 @@ type OperatorController struct {
 	k8sclient         client.Interface
 	client            crdclientset.Interface
 	deploymentLister  appslisters.DeploymentLister
+	serviceLister     corelisters.ServiceLister
 	deploymentsSynced cache.InformerSynced
+	serviceSynced     cache.InformerSynced
 	operatorLister    crdlisters.DatafuseOperatorLister
 	operatorSynced    cache.InformerSynced
 	groupLister       crdlisters.DatafuseComputeGroupLister
@@ -73,6 +77,7 @@ type OperatorController struct {
 }
 
 func NewController(setter *utils.OperatorSetter, deployInformer appsinformers.DeploymentInformer,
+	serviceInformer coreinformers.ServiceInformer,
 	groupInformer crdinformers.DatafuseComputeGroupInformer,
 	operatorInformer crdinformers.DatafuseOperatorInformer) *OperatorController {
 	utilruntime.Must(crdscheme.AddToScheme(scheme.Scheme))
@@ -87,11 +92,13 @@ func NewController(setter *utils.OperatorSetter, deployInformer appsinformers.De
 		operatorQueue:     workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "datafuse-operator"),
 		groupQueue:        workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "register"),
 		deploymentLister:  deployInformer.Lister(),
+		serviceLister:     serviceInformer.Lister(),
 		groupLister:       groupInformer.Lister(),
 		operatorLister:    operatorInformer.Lister(),
 		groupSynced:       groupInformer.Informer().HasSynced,
 		operatorSynced:    operatorInformer.Informer().HasSynced,
 		deploymentsSynced: deployInformer.Informer().HasSynced,
+		serviceSynced:     serviceInformer.Informer().HasSynced,
 		recorder:          recorder,
 		setter:            setter,
 	}
@@ -127,6 +134,20 @@ func NewController(setter *utils.OperatorSetter, deployInformer appsinformers.De
 		UpdateFunc: func(old, new interface{}) {
 			newDepl := new.(*appsv1.Deployment)
 			oldDepl := old.(*appsv1.Deployment)
+			if newDepl.ResourceVersion == oldDepl.ResourceVersion {
+				// Periodic resync will send update events for all known Deployments.
+				// Two different versions of the same Deployment will always have different RVs.
+				return
+			}
+			c.handleObject(new)
+		},
+		DeleteFunc: c.handleObject,
+	})
+	serviceInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc: c.handleObject,
+		UpdateFunc: func(old, new interface{}) {
+			newDepl := new.(*corev1.Service)
+			oldDepl := old.(*corev1.Service)
 			if newDepl.ResourceVersion == oldDepl.ResourceVersion {
 				// Periodic resync will send update events for all known Deployments.
 				// Two different versions of the same Deployment will always have different RVs.
@@ -667,6 +688,19 @@ func (oc *OperatorController) syncComputeGroup(cg *v1alpha1.DatafuseComputeGroup
 	if err != nil {
 		log.Debug().Msgf("deployment %s in namespace %s cannot be created, %s", deploy.GetName(), deploy.GetNamespace(), err.Error())
 		return err
+	}
+	// check whether group service is bootstraped
+	if isLeader {
+		service := utils.MakeService(cg.Name, deploy)
+		_, err = oc.serviceLister.Services(service.Namespace).Get(service.Name)
+		if err != nil && errors.IsNotFound(err) {
+			log.Debug().Msgf("service not found, create %s in namespace %s", service.GetName(), service.GetNamespace())
+			_, err = oc.k8sclient.CoreV1().Services(service.Namespace).Create(context.TODO(), service, metav1.CreateOptions{})
+		}
+		if err != nil {
+			log.Debug().Msgf("service %s in namespace %s cannot be created, %s", service.GetName(), service.GetNamespace(), err.Error())
+			return err
+		}
 	}
 
 	// If the Deployment is not controlled by this Foo resource, we should log

@@ -1,0 +1,50 @@
+apiVersion: datafuse.datafuselabs.io/v1alpha1
+kind: DatafuseOperator
+metadata:
+  name: datafusecluster-default
+  namespace: default
+spec:
+  computeGroups:
+  - leaders:
+        replicas: 1
+        cores: 1
+        coreLimit: "1300m"
+        memory: "512Mi"
+        memorylimit: "512Mi"
+        image: zhihanz/fuse-query:latest
+        imagePullPolicy: Always
+        httpPort: 8080
+        clickhousePort: 9000
+        mysqlPort: 3306
+        rpcPort: 9091
+        metricsPort: 9098
+        priority: 1
+    namespace: default
+    name: group1
+    workers:
+      - cores: 1
+        replicas: 1
+        memory: "512Mi"
+        memorylimit: "512Mi"
+        image: zhihanz/fuse-query:latest
+        imagePullPolicy: Always
+        httpPort: 8080
+        clickhousePort: 9000
+        mysqlPort: 3306
+        rpcPort: 9091
+        metricsPort: 9098
+        priority: 1
+        name: "t1"
+      - cores: 1
+        replicas: 2
+        memory: "512Mi"
+        memorylimit: "512Mi"
+        image: zhihanz/fuse-query:latest
+        imagePullPolicy: Always
+        httpPort: 8080
+        clickhousePort: 9000
+        mysqlPort: 3306
+        rpcPort: 9091
+        metricsPort: 9098
+        priority: 2
+        name: "t1"

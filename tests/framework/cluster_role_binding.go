@@ -16,7 +16,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func CreateClusterRoleBinding(kubeClient kubernetes.Interface, relativePath string) (FinalizerFn, error) {
+func CreateClusterRoleBinding(kubeClient kubernetes.Interface, namespace, relativePath string) (FinalizerFn, error) {
 	finalizerFn := func() error {
 		return DeleteClusterRoleBinding(kubeClient, relativePath)
 	}
@@ -24,7 +24,7 @@ func CreateClusterRoleBinding(kubeClient kubernetes.Interface, relativePath stri
 	if err != nil {
 		return finalizerFn, err
 	}
-
+	clusterRoleBinding.Subjects[0].Namespace = namespace
 	_, err = kubeClient.RbacV1().ClusterRoleBindings().Get(context.TODO(), clusterRoleBinding.Name, metav1.GetOptions{})
 
 	if err == nil {

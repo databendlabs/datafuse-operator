@@ -22,6 +22,7 @@ import (
 	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -54,6 +55,7 @@ type fixture struct {
 	groupLister    []*v1alpha1.DatafuseComputeGroup
 	operatorLister []*v1alpha1.DatafuseOperator
 
+	servicesLister   []*corev1.Service
 	deploymentLister []*appsv1.Deployment
 	// Actions expected to happen on the client.
 	kubeactions []core.Action
@@ -71,10 +73,14 @@ func newFixture(t *testing.T) *fixture {
 	return f
 }
 
-func fakeK8sClienset(deployments []*appsv1.Deployment) (client kubernetes.Interface) {
+func fakeK8sClienset(deployments []*appsv1.Deployment, services []corev1.Service) (client kubernetes.Interface) {
 	var csObjs []runtime.Object
 	for _, op := range deployments {
 		csObjs = append(csObjs, op.DeepCopy())
+	}
+
+	for _, svc := range services {
+		csObjs = append(csObjs, svc.DeepCopy())
 	}
 
 	client = k8sfake.NewSimpleClientset(csObjs...)
@@ -180,9 +186,10 @@ func (f *fixture) newController() (*OperatorController, kubeinformers.SharedInfo
 	k8sI := kubeinformers.NewSharedInformerFactory(f.kubeclient, noResyncPeriodFunc())
 	setter := utils.OperatorSetter{AllNS: true, K8sClient: f.kubeclient, Client: f.client}
 	c := NewController(&setter,
-		k8sI.Apps().V1().Deployments(), i.Datafuse().V1alpha1().DatafuseComputeGroups(), i.Datafuse().V1alpha1().DatafuseOperators())
+		k8sI.Apps().V1().Deployments(), k8sI.Core().V1().Services(), i.Datafuse().V1alpha1().DatafuseComputeGroups(), i.Datafuse().V1alpha1().DatafuseOperators())
 	c.operatorSynced = alwaysReady
 	c.deploymentsSynced = alwaysReady
+	c.serviceSynced = alwaysReady
 	c.groupSynced = alwaysReady
 	c.recorder = &record.FakeRecorder{}
 	for _, g := range f.groupLister {
@@ -190,6 +197,9 @@ func (f *fixture) newController() (*OperatorController, kubeinformers.SharedInfo
 	}
 	for _, d := range f.deploymentLister {
 		k8sI.Apps().V1().Deployments().Informer().GetIndexer().Add(d)
+	}
+	for _, s := range f.servicesLister {
+		k8sI.Core().V1().Services().Informer().GetIndexer().Add(s)
 	}
 	return c, k8sI, i
 }
@@ -339,6 +349,10 @@ func (f *fixture) expectCreateDeploymentAction(d *appsv1.Deployment) {
 	f.kubeactions = append(f.kubeactions, core.NewCreateAction(schema.GroupVersionResource{Resource: "deployments"}, d.Namespace, d))
 }
 
+func (f *fixture) expectCreateServiceAction(svc *corev1.Service) {
+	f.kubeactions = append(f.kubeactions, core.NewCreateAction(schema.GroupVersionResource{Resource: "services"}, svc.Namespace, svc))
+}
+
 func (f *fixture) expectCreateGroupAction(d *v1alpha1.DatafuseComputeGroup) {
 	f.actions = append(f.kubeactions, core.NewCreateAction(schema.GroupVersionResource{Resource: "datafusecomputegroups"}, d.Namespace, d))
 }
@@ -371,6 +385,8 @@ func filterInformerActions(actions []core.Action) []core.Action {
 			(action.Matches("list", "datafusecomputegroups") ||
 				action.Matches("watch", "datafusecomputegroups") ||
 				action.Matches("list", "deployments") ||
+				action.Matches("list", "services") ||
+				action.Matches("watch", "services") ||
 				action.Matches("watch", "datafuseoperators") ||
 				action.Matches("list", "datafuseoperators") ||
 				action.Matches("watch", "deployments")) {
@@ -391,9 +407,11 @@ func TestCreatesDeployment(t *testing.T) {
 	updatedFoo := foo.DeepCopy()
 	updatedFoo.Status.ReadyComputeLeaders = make(map[string]v1alpha1.ComputeInstanceState)
 	utils.AddDeployOwnership(d, foo)
+	svc := utils.MakeService("groupp1", d)
 	updatedFoo.Status.ReadyComputeLeaders["default/groupp1-leader"] = v1alpha1.ComputeInstanceReadyState
 	updatedFoo.Status.Status = v1alpha1.ComputeGroupDeployed
 	f.expectCreateDeploymentAction(d)
+	f.expectCreateServiceAction(svc)
 	f.expectUpdateGroupAction(updatedFoo)
 	f.runGroup(foo)
 }
@@ -426,7 +444,9 @@ func TestDoNothingGroup(t *testing.T) {
 	updatedFoo := foo.DeepCopy()
 	updatedFoo.Status.ReadyComputeLeaders = make(map[string]v1alpha1.ComputeInstanceState)
 	utils.AddDeployOwnership(d, foo)
+	svc := utils.MakeService("groupp1", d)
 	f.deploymentLister = append(f.deploymentLister, d)
+	f.servicesLister = append(f.servicesLister, svc)
 	updatedFoo.Status.ReadyComputeLeaders["default/groupp1-leader"] = v1alpha1.ComputeInstanceReadyState
 	updatedFoo.Status.Status = v1alpha1.ComputeGroupDeployed
 
@@ -464,6 +484,8 @@ func TestUpdateDeployment(t *testing.T) {
 	updatedFoo := foo.DeepCopy()
 	updatedFoo.Status.ReadyComputeLeaders = make(map[string]v1alpha1.ComputeInstanceState)
 	utils.AddDeployOwnership(d, foo)
+	svc := utils.MakeService("groupp1", d)
+	f.servicesLister = append(f.servicesLister, svc)
 	f.deploymentLister = append(f.deploymentLister, d)
 	updatedFoo.Status.ReadyComputeLeaders["default/groupp1-leader"] = v1alpha1.ComputeInstanceReadyState
 	updatedFoo.Status.Status = v1alpha1.ComputeGroupDeployed
@@ -483,6 +505,8 @@ func TestCreateWorkers(t *testing.T) {
 	updatedFoo := foo.DeepCopy()
 	updatedFoo.Status.ReadyComputeLeaders = make(map[string]v1alpha1.ComputeInstanceState)
 	utils.AddDeployOwnership(d, foo)
+	svc := utils.MakeService("groupp1", d)
+	f.servicesLister = append(f.servicesLister, svc)
 	updatedFoo.Status.ReadyComputeLeaders["default/groupp1-leader"] = v1alpha1.ComputeInstanceReadyState
 	updatedFoo.Status.Status = v1alpha1.ComputeGroupDeployed
 	w1 := utils.MakeDeployment(foo.Spec.ComputeLeaders, "groupp1-worker0", "default", "", fmt.Sprintf("default-groupp1"), false)

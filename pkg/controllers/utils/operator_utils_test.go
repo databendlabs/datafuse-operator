@@ -125,6 +125,39 @@ func TestSampleDeployment(t *testing.T) {
 			Protocol:      corev1.ProtocolTCP,
 		},
 	}
+
+	desiredServicePorts := []corev1.ServicePort{
+		{
+			Name:       controller.ContainerHTTPPort,
+			TargetPort: intstr.FromInt(8080),
+			Port:       8080,
+			Protocol:   corev1.ProtocolTCP,
+		},
+		{
+			Name:       controller.ContainerMysqlPort,
+			TargetPort: intstr.FromInt(3306),
+			Port:       3306,
+			Protocol:   corev1.ProtocolTCP,
+		},
+		{
+			Name:       controller.ContainerClickhousePort,
+			TargetPort: intstr.FromInt(9000),
+			Port:       9000,
+			Protocol:   corev1.ProtocolTCP,
+		},
+		{
+			Name:       controller.ContainerRPCPort,
+			TargetPort: intstr.FromInt(9091),
+			Port:       9091,
+			Protocol:   corev1.ProtocolTCP,
+		},
+		{
+			Name:       controller.ContainerMetricsPort,
+			TargetPort: intstr.FromInt(9098),
+			Port:       9098,
+			Protocol:   corev1.ProtocolTCP,
+		},
+	}
 	assert.Equal(t, deploy.Name, "group1-leader-1")
 	assert.Equal(t, deploy.Namespace, op.Spec.ComputeGroups[0].Namespace)
 	assert.Equal(t, deploy.Labels, desiredLabels)
@@ -136,6 +169,15 @@ func TestSampleDeployment(t *testing.T) {
 	assert.Equal(t, deploy.Spec.Template.Spec.Containers[0].LivenessProbe, desiredLivenessProbe)
 	assert.Equal(t, deploy.Spec.Template.Spec.Containers[0].ReadinessProbe, desiredReadinessProbe)
 	assert.Equal(t, deploy.Spec.Template.Spec.Containers[0].Ports, desiredPorts)
+
+	svc := MakeService("group1", deploy)
+	assert.Equal(t, svc.Name, "group1")
+	assert.Equal(t, svc.Namespace, deploy.Namespace)
+	assert.Equal(t, svc.Labels, deploy.Labels)
+	assert.Equal(t, svc.Spec.Selector, deploy.Labels)
+	assert.Equal(t, svc.OwnerReferences, deploy.OwnerReferences)
+	assert.Equal(t, svc.Spec.Ports, desiredServicePorts)
+
 }
 
 func TestMakeComputeGroup(t *testing.T) {

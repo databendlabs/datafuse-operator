@@ -1,13 +1,18 @@
 package e2e
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	operatorFramework "datafuselabs.io/datafuse-operator/tests/framework"
+	"datafuselabs.io/datafuse-operator/tests/utils/retry"
 	"datafuselabs.io/datafuse-operator/utils"
+	"github.com/stretchr/testify/assert"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var (
@@ -54,10 +59,32 @@ func TestMain(m *testing.M) {
 	os.Exit(exitCode)
 }
 
-// func TestAllNS(t *testing.T) {
-// 	ctx := framework.NewTestCtx(t)
-// 	defer ctx.Cleanup(t)
-// 	ns := ctx.CreateNamespace(t, framework.KubeClient)
-// 	err := framework.Setup(ns, *opImage, "Always")
-// 	assert.NoError(t, err)
-// }
+func TestAllNS(t *testing.T) {
+	ctx := framework.NewTestCtx(t)
+	defer ctx.Cleanup(t)
+	ns := ctx.CreateNamespace(t, framework.KubeClient)
+	err := framework.Setup(ns, *opImage, "Always")
+	assert.NoError(t, err)
+	t.Run("simple", testSimpleDeploy)
+}
+
+func testSimpleDeploy(t *testing.T) {
+	ctx := framework.NewTestCtx(t)
+	defer ctx.Cleanup(t)
+	ns := ctx.CreateNamespace(t, framework.KubeClient)
+	t.Logf("current deploy namespace %s", ns)
+	op, err := operatorFramework.MakeDatafuseOperatorFromYaml("./testfiles/default_operator.yaml")
+	assert.NoError(t, err)
+	op.Namespace = ns
+	op.Spec.ComputeGroups[0].Namespace = ns
+	err = operatorFramework.CreateDatafuseOperator(framework.Client, ns, op)
+	assert.NoError(t, err)
+	retry.UntilSuccessOrFail(t, func() error {
+		_, err := framework.KubeClient.AppsV1().Deployments(ns).Get(context.TODO(), "group1-leader", v1.GetOptions{})
+		if err != nil {
+			return err
+		}
+		return nil
+	}, *retry.NewConfig().SetCoverage(1).SetInterval(1 * time.Second).SetTimeOut(5 * time.Minute))
+
+}

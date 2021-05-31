@@ -32,7 +32,7 @@ func MakeDatafuseOperatorFromYaml(pathToYaml string) (*v1alpha1.DatafuseOperator
 func CreateDatafuseOperator(crdclientset crdclientset.Interface, namespace string, op *v1alpha1.DatafuseOperator) error {
 	_, err := crdclientset.DatafuseV1alpha1().DatafuseOperators(namespace).Create(context.TODO(), op, metav1.CreateOptions{})
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("failed to create SparkApplication %s in %s", op.Name, op.Namespace))
+		return errors.Wrap(err, fmt.Sprintf("failed to create DatafuseOperator %s in %s", op.Name, op.Namespace))
 	}
 	return nil
 }
@@ -40,7 +40,7 @@ func CreateDatafuseOperator(crdclientset crdclientset.Interface, namespace strin
 func UpdateDatafuseOperator(crdclientset crdclientset.Interface, namespace string, op *v1alpha1.DatafuseOperator) error {
 	_, err := crdclientset.DatafuseV1alpha1().DatafuseOperators(namespace).Update(context.TODO(), op, metav1.UpdateOptions{})
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("failed to create SparkApplication %s in %s", op.Name, op.Namespace))
+		return errors.Wrap(err, fmt.Sprintf("failed to create DatafuseOperator %s in %s", op.Name, op.Namespace))
 	}
 	return nil
 }
@@ -48,7 +48,7 @@ func UpdateDatafuseOperator(crdclientset crdclientset.Interface, namespace strin
 func GetDatafuseOperator(crdclientset crdclientset.Interface, namespace string, name string) error {
 	_, err := crdclientset.DatafuseV1alpha1().DatafuseOperators(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("failed to create SparkApplication %s in %s", name, namespace))
+		return errors.Wrap(err, fmt.Sprintf("failed to create DatafuseOperator %s in %s", name, namespace))
 	}
 	return nil
 }
@@ -56,7 +56,7 @@ func GetDatafuseOperator(crdclientset crdclientset.Interface, namespace string, 
 func DeleteDatafuseOperator(crdclientset crdclientset.Interface, namespace string, name string) error {
 	err := crdclientset.DatafuseV1alpha1().DatafuseOperators(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("failed to create SparkApplication %s in %s", name, namespace))
+		return errors.Wrap(err, fmt.Sprintf("failed to create DatafuseOperator %s in %s", name, namespace))
 	}
 	return nil
 }

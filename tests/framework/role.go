@@ -23,7 +23,6 @@ func CreateRole(kubeClient kubernetes.Interface, ns string, relativePath string)
 	}
 
 	role.Namespace = ns
-
 	_, err = kubeClient.RbacV1().Roles(ns).Get(context.TODO(), role.Name, metav1.GetOptions{})
 
 	if err == nil {

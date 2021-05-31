@@ -112,12 +112,14 @@ func (f *Framework) Setup(namespace, opImage string, opImagePullPolicy string) e
 }
 
 func (f *Framework) setupOperator(namespace, opImage string, opImagePullPolicy string) error {
-
+	if _, err := CreateServiceAccount(f.KubeClient, namespace, "../../manifests/datafuse-rbac.yaml"); err != nil && !apierrors.IsAlreadyExists(err) {
+		return errors.Wrap(err, "failed to create service account")
+	}
 	if err := CreateClusterRole(f.KubeClient, "../../manifests/datafuse-rbac.yaml"); err != nil && !apierrors.IsAlreadyExists(err) {
 		return errors.Wrap(err, "failed to create cluster role")
 	}
 
-	if _, err := CreateClusterRoleBinding(f.KubeClient, "../../manifests/datafuse-rbac.yaml"); err != nil && !apierrors.IsAlreadyExists(err) {
+	if _, err := CreateClusterRoleBinding(f.KubeClient, namespace, "../../manifests/datafuse-rbac.yaml"); err != nil && !apierrors.IsAlreadyExists(err) {
 		return errors.Wrap(err, "failed to create cluster role binding")
 	}
 

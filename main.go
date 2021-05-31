@@ -104,7 +104,9 @@ func main() {
 	// 	crdInformerFactory.Datafuse().V1alpha1().DatafuseComputeGroups(),
 	// 	crdInformerFactory.Datafuse().V1alpha1().DatafuseOperators(),
 	// )
-	controller := operator.NewController(&utils.OperatorSetter{K8sClient: kubeClient, Client: crdClient, AllNS: true}, kubeInformerFactory.Apps().V1().Deployments(), crdInformerFactory.Datafuse().V1alpha1().DatafuseComputeGroups(), crdInformerFactory.Datafuse().V1alpha1().DatafuseOperators())
+	controller := operator.NewController(&utils.OperatorSetter{K8sClient: kubeClient, Client: crdClient, AllNS: true},
+		kubeInformerFactory.Apps().V1().Deployments(), kubeInformerFactory.Core().V1().Services(),
+		crdInformerFactory.Datafuse().V1alpha1().DatafuseComputeGroups(), crdInformerFactory.Datafuse().V1alpha1().DatafuseOperators())
 	rc, err := register.NewRegisterController(&register.RegistSetter{AllNS: true, Namspaces: []string{}, K8sClient: kubeClient})
 	go kubeInformerFactory.Start(stopCh)
 	go crdInformerFactory.Start(stopCh)
