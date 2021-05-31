@@ -5,7 +5,7 @@ metadata:
   name: datafusecomputeset-editor-role
 rules:
 - apiGroups:
-  - datafuseoperator.datafuselabs.io
+  - datafuse.datafuselabs.io
   resources:
   - datafusecomputesets
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - datafuseoperator.datafuselabs.io
+  - datafuse.datafuselabs.io
   resources:
   - datafusecomputesets/status
   verbs:

@@ -1,0 +1,152 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: datafusecomputesets.datafuse.datafuselabs.io
+spec:
+  group: datafuse.datafuselabs.io
+  names:
+    kind: DatafuseComputeSet
+    listKind: DatafuseComputeSetList
+    plural: datafusecomputesets
+    singular: datafusecomputeset
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: DatafuseComputeSet is the Schema for the datafusecomputesets
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: DatafuseComputeSetSpec defines the desired state of DatafuseComputeSet
+            properties:
+              clickhousePort:
+                default: 9000
+                description: Port open to Clickhouse Client connection
+                format: int32
+                type: integer
+              coreLimit:
+                default: 1200m
+                description: CoreLimit specifies a hard limit on CPU cores for the
+                  instance.
+                type: string
+              cores:
+                default: 1
+                description: Num of cpus for the instance,
+                format: int32
+                minimum: 1
+                type: integer
+              httpPort:
+                default: 8080
+                description: 'Port for warp HTTP connection, can get cluster infomation
+                  and support to add/remove port We also use HTTP port for health
+                  check and readiness check TODO(zhihanz) docs on readiness check
+                  difference between leaders and workers example: https://github.com/datafuselabs/datafuse/blob/master/fusequery/example/cluster.sh'
+                format: int32
+                type: integer
+              image:
+                default: datafuselabs/fuse-query:latest
+                description: Image is the container image to use. Overrides Spec.Image
+                  if set.
+                type: string
+              imagePullPolicy:
+                default: Always
+                description: ImagePullPolicy is the image pull policy for the driver,
+                  executor, and init-container.
+                type: string
+              labels:
+                additionalProperties:
+                  type: string
+                description: Labels are the Kubernetes labels to be added to the pod.
+                type: object
+              memory:
+                default: 512m
+                description: Memory is the amount of memory to request for the instance.
+                type: string
+              memorylimit:
+                default: 512m
+                description: MemoryLimit is the amount of memory limit for the instance.
+                  in MiB
+                type: string
+              metricsPort:
+                default: 7070
+                description: Port for metrics exporter
+                format: int32
+                type: integer
+              mysqlPort:
+                default: 3307
+                description: Port open to Mysql Client connection
+                format: int32
+                type: integer
+              name:
+                description: Name is the specific name of current instance
+                type: string
+              priority:
+                default: 1
+                description: Priority range from 1 - 10 inclusive, higher priority
+                  means more workload will be distributed to the instance
+                format: int32
+                maximum: 10
+                minimum: 1
+                type: integer
+              replicas:
+                description: Number of compute instances
+                format: int32
+                minimum: 0
+                type: integer
+              rpcPort:
+                default: 9090
+                description: Port for gRPC communication
+                format: int32
+                type: integer
+            required:
+            - cores
+            type: object
+          status:
+            description: DatafuseComputeSetStatus defines the observed state of DatafuseComputeSet
+            properties:
+              instancestatus:
+                additionalProperties:
+                  type: string
+                type: object
+              replicas:
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
+                format: int32
+                type: integer
+              selector:
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      scale:
+        labelSelectorPath: .status.selector
+        specReplicasPath: .spec.replicas
+        statusReplicasPath: .status.replicas
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

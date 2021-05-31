@@ -5,7 +5,7 @@ metadata:
   name: datafusecomputegroup-viewer-role
 rules:
 - apiGroups:
-  - datafuseoperator.datafuselabs.io
+  - datafuse.datafuselabs.io
   resources:
   - datafusecomputegroups
   verbs:
@@ -13,7 +13,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - datafuseoperator.datafuselabs.io
+  - datafuse.datafuselabs.io
   resources:
   - datafusecomputegroups/status
   verbs:

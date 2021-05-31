@@ -1,16 +1,23 @@
 domain: datafuselabs.io
-repo: datafuse-operator
+layout: go.kubebuilder.io/v3
+multigroup: true
+projectName: new-operator
+repo: datafuselabs.io/datafuse-operator
 resources:
-- group: datafuseoperator
-  kind: DatafuseCluster
-  version: v1
-- group: datafuseoperator
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: datafuselabs.io
+  group: datafuse
   kind: DatafuseComputeGroup
-  version: v1
-- group: datafuseoperator
-  kind: DatafuseComputeInstance
-  version: v1
-- group: datafuseoperator
-  kind: DatafuseComputeSet
-  version: v1
-version: "2"
+  path: datafuselabs.io/datafuse-operator/apis/datafuse/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: datafuselabs.io
+  group: datafuse
+  kind: DatafuseOperator
+  path: datafuselabs.io/datafuse-operator/apis/datafuse/v1alpha1
+  version: v1alpha1
+version: "3"

@@ -1,0 +1,77 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fuse-query-driver
+  labels:
+    app: fuse-query-driver
+    env: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fuse-query-driver
+      env: dev
+      datafuse-computegroup: group1-default
+      datafuse-computegrouprole: leader
+
+  template:
+    metadata:
+      labels:
+        app: fuse-query-driver
+        env: dev
+        datafuse-computegroup: group1-default
+        datafuse-computegrouprole: leader
+    spec:
+      containers:
+      - name: fuse-query-driver
+        image: zhihanz/fuse-query:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "2300m"
+          limits:
+            memory: "512Mi"
+            cpu: "2300m"
+        env:
+        - name: FUSE_QUERY_HTTP_API_ADDRESS
+          value: 0.0.0.0:8080
+        - name: FUSE_QUERY_MYSQL_HANDLER_HOST
+          value: 0.0.0.0
+        - name: FUSE_QUERY_METRIC_API_ADDRESS
+          value: 0.0.0.0:7070
+        - name: FUSE_QUERY_FLIGHT_API_ADDRESS
+          value: 0.0.0.0:9090
+        - name: FUSE_QUERY_MYSQL_HANDLER_PORT
+          value: "3307"
+        - name: FUSE_QUERY_PRIORITY
+          value: "1"
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /v1/hello
+            port: http 
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        ports:
+        - containerPort: 3307
+          name: mysql
+          protocol: TCP
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 9090
+          name: grpc
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /v1/configs
+            port: http
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1

@@ -1,0 +1,27 @@
+apiVersion: datafuse.datafuselabs.io/v1alpha1
+kind: DatafuseOperator
+metadata:
+  name: datafusecluster-default
+  namespace: default
+spec:
+  computeGroups:
+  - metadata:
+      name: datafusegroup-1
+      namespace: default
+    spec:
+      leaders:
+        cores: 1
+  #     workers:
+  #     - spec:
+  #         cores: 1
+  #     - spec:
+  #         cores: 3
+  # - spec:
+  #     leaders:
+  #       spec:
+  #         cores: 3
+  #     workers:
+  #     - spec:
+  #         cores: 3
+  #     - spec:
+  #         cores: 5

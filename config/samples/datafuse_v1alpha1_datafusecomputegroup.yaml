@@ -1,0 +1,16 @@
+apiVersion: datafuse.datafuselabs.io/v1alpha1
+kind: DatafuseComputeGroup
+metadata:
+  name: datafusecomputegroup-sample
+  namespace: default
+spec:
+  # Add fields here
+  leaders:
+    spec: 
+      cores: 1
+  workers:
+    - spec:
+        cores: 3
+    - spec:
+        cores: 2
+        replicas: 2
