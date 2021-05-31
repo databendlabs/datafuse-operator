@@ -169,11 +169,11 @@ func (f *Framework) setupOperator(namespace, opImage string, opImagePullPolicy s
 
 // Teardown tears down a previously initialized test environment.
 func (f *Framework) Teardown(ns string) error {
-	if err := DeleteClusterRole(f.KubeClient, "../../manifest/spark-operator-rbac.yaml"); err != nil && !apierrors.IsAlreadyExists(err) {
+	if err := DeleteClusterRole(f.KubeClient, "../../manifest/datafuse-rbac.yaml"); err != nil && !apierrors.IsAlreadyExists(err) {
 		return errors.Wrap(err, "failed to delete operator cluster role")
 	}
 
-	if err := DeleteClusterRoleBinding(f.KubeClient, "../../manifest/spark-operator-rbac.yaml"); err != nil && !apierrors.IsAlreadyExists(err) {
+	if err := DeleteClusterRoleBinding(f.KubeClient, "../../manifest/datafuse-rbac.yaml"); err != nil && !apierrors.IsAlreadyExists(err) {
 		return errors.Wrap(err, "failed to delete operator cluster role binding")
 	}
 

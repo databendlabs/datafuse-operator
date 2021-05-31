@@ -1,18 +1,6 @@
-/*
-Copyright 2021.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+// Copyright 2020-2021 The Datafuse Authors.
+//
+// SPDX-License-Identifier: Apache-2.0.
 package operator
 
 import (
@@ -542,99 +530,5 @@ func TestCreateWorkers(t *testing.T) {
 	f.runGroup(foo)
 }
 
-// // simplified taintsetter controller build upon fake sourcer, return controller and namespace, label based sourcer created by configmap
-// func newMockOperatorController(ts *utils.OperatorSetter) (c *OperatorController,
-// 	opSourcers map[string]*fcache.FakeControllerSource,
-// 	groupSourcers map[string]*fcache.FakeControllerSource) {
-// 	c = &OperatorController{
-// 		k8sclient:              ts.K8sClient,
-// 		client:                 ts.Client,
-// 		operatorQueue:          workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
-// 		groupQueue:             workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter()),
-// 		setter:                 ts,
-// 		cachedOperatorInformer: make(map[string]cache.SharedInformer),
-// 		cachedGroupInformer:    make(map[string]cache.SharedInformer),
-// 	}
-// 	// construct a series of pod controller according to the configmaps' namespace and labelselector
-// 	opSourcers = make(map[string]*fcache.FakeControllerSource)
-// 	groupSourcers = make(map[string]*fcache.FakeControllerSource)
-// 	if ts.AllNS {
-// 		opSourcer := fcache.NewFakeControllerSource()
-// 		opSourcers[metav1.NamespaceAll] = opSourcer
-// 		buildOperatorInformer(c, metav1.NamespaceAll, opSourcer)
-// 		groupSourcer := fcache.NewFakeControllerSource()
-// 		groupSourcers[metav1.NamespaceAll] = groupSourcer
-// 		buildComputeGroupInformer(c, metav1.NamespaceAll, groupSourcer)
-// 	} else {
-// 		//TODO
-// 	}
-// 	return c, opSourcers, groupSourcers
-// }
-
-// func TestOperatorControllerCreateGroup(t *testing.T) {
-// 	tests := []struct {
-// 		name                 string
-// 		existedOperators     []*v1alpha1.DatafuseOperator
-// 		existedGroups        []*v1alpha1.DatafuseComputeGroup
-// 		k8sclient            kubernetes.Interface
-// 		AllNS                bool
-// 		namspaces            []string
-// 		desiredOperators     []*v1alpha1.DatafuseOperator
-// 		desiredComputeGroups []*v1alpha1.DatafuseComputeGroup
-// 	}{
-// 		{
-// 			name:                 "one group in operator",
-// 			k8sclient:            fakeK8sClienset([]*appsv1.Deployment{}),
-// 			existedOperators:     []*v1alpha1.DatafuseOperator{newOperator("operator1", []*v1alpha1.DatafuseComputeGroupSpec{newComputeGroupSpec("group1", "default", int32Ptr(1), []*workerSettings{})})},
-// 			existedGroups:        []*v1alpha1.DatafuseComputeGroup{},
-// 			AllNS:                true,
-// 			namspaces:            []string{},
-// 			desiredOperators:     []*v1alpha1.DatafuseOperator{newOperator("operator1", []*v1alpha1.DatafuseComputeGroupSpec{newComputeGroupSpec("group1", "default", int32Ptr(1), []*workerSettings{})})},
-// 			desiredComputeGroups: []*v1alpha1.DatafuseComputeGroup{},
-// 		},
-// 		// {
-// 		// 	name:             "no group in operator",
-// 		// 	k8sclient:        fakeK8sClienset([]appsv1.Deployment{}),
-// 		// 	existedOperators: []*v1alpha1.DatafuseOperator{newOperator("operator1", []*v1alpha1.DatafuseComputeGroupSpec{})},
-// 		// 	existedGroups:    []*v1alpha1.DatafuseComputeGroup{},
-// 		// 	AllNS:            true,
-// 		// 	namspaces:        []string{},
-// 		// 	desiredOperators: []*v1alpha1.DatafuseOperator{newOperator("operator1", []*v1alpha1.DatafuseComputeGroupSpec{})},
-// 		// },
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			client := fakeClientset(tt.existedOperators, tt.existedGroups)
-// 			setter := &utils.OperatorSetter{K8sClient: tt.k8sclient, Client: client, AllNS: tt.AllNS, Namspaces: tt.namspaces}
-// 			oc, opSourcers, groupSourcer := newMockOperatorController(setter)
-// 			stop := make(chan struct{})
-// 			if setter.AllNS {
-// 				for _, elem := range tt.existedOperators {
-// 					opSourcers[metav1.NamespaceAll].Add(elem)
-// 				}
-// 				for _, elem := range tt.existedGroups {
-// 					groupSourcer[metav1.NamespaceAll].Add(elem)
-// 				}
-// 			}
-// 			go oc.Run(stop)
-
-// 			// Let's wait for the controller to finish processing the things we just added.
-// 			err := retry.UntilSuccess(func() error {
-// 				operators := oc.ListValidOperators()
-// 				assert.Equal(t, tt.desiredOperators, operators)
-// 				groups := oc.ListValidComputeGroups()
-// 				if len(groups) != len(tt.desiredComputeGroups) {
-// 					return fmt.Errorf("the group has %d len, but desired %d", len(groups), len(tt.desiredComputeGroups))
-// 				}
-// 				return nil
-// 			}, *retry.NewConfig().SetTimeOut(30 * time.Second).SetInterval(3000 * time.Millisecond).SetCoverage(1))
-// 			if err != nil {
-// 				t.Fatalf(err.Error())
-// 			}
-// 			close(stop)
-// 		})
-
-// 	}
-// }
 func int32Ptr(i int32) *int32   { return &i }
 func strPtr(str string) *string { return &str }
