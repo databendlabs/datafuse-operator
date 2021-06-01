@@ -19,7 +19,7 @@ DataFuse operator manages fuse-query and fuse-store clusters atop [Kubernetes](h
 
 ## Roadmap
 
-- [*] 0.1 Support Basic Install (Automated provisioning and configuration management)
+- [ ] 0.1 Support Basic Install (Automated provisioning and configuration management)
 - [ ] 0.2 Support Seemless Upgrades (patch and minor version upgrade supported)
 - [ ] 0.3 Support Full lifecycle orchestration(High availability)
 - [ ] 0.5 Support Deep Insights (Monitoring metrics, workload analysis)
@@ -29,7 +29,7 @@ DataFuse operator manages fuse-query and fuse-store clusters atop [Kubernetes](h
 
 #### General
 
-- [*] CRD definition
+- [ ] CRD definition
 - [ ] Workload Lifecycle Controllers
 - [ ] Continuous Integration tests
 - [ ] High Availability operator cluster and Datafuse cluster
