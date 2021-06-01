@@ -29,6 +29,10 @@ func TestSampleDeployment(t *testing.T) {
 	}
 	desiredEnvs := []v1.EnvVar{
 		{
+			Name:  controller.FUSE_QUERY_NUM_CPUS,
+			Value: "1",
+		},
+		{
 			Name:  controller.FUSE_QUERY_MYSQL_HANDLER_HOST,
 			Value: "0.0.0.0",
 		},
@@ -206,6 +210,10 @@ func TestMakeFuseQueryPod(t *testing.T) {
 		controller.ComputeGroupRoleLabel: controller.ComputeGroupRoleLeader,
 	}
 	desiredEnvs := []v1.EnvVar{
+		{
+			Name:  controller.FUSE_QUERY_NUM_CPUS,
+			Value: "1",
+		},
 		{
 			Name:  controller.FUSE_QUERY_MYSQL_HANDLER_HOST,
 			Value: "0.0.0.0",

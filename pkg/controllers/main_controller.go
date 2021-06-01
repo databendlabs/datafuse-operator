@@ -23,6 +23,7 @@ const (
 	ComputeGroupRoleLeader             = "leader"
 	ComputeGroupRoleFollower           = "follower"
 	InstanceContainerName              = "fusequery"
+	FUSE_QUERY_NUM_CPUS                = "FUSE_QUERY_NUM_CPUS"
 	FUSE_QUERY_MYSQL_HANDLER_HOST      = "FUSE_QUERY_MYSQL_HANDLER_HOST"
 	FUSE_QUERY_MYSQL_HANDLER_PORT      = "FUSE_QUERY_MYSQL_HANDLER_PORT"
 	FUSE_QUERY_CLICKHOUSE_HANDLER_HOST = "FUSE_QUERY_CLICKHOUSE_HANDLER_HOST"

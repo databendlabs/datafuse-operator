@@ -1,0 +1,29 @@
+apiVersion: datafuse.datafuselabs.io/v1alpha1
+kind: DatafuseOperator
+metadata:
+  name: datafusecluster-default
+  namespace: default
+spec:
+  computeGroups:
+  - leaders:
+        replicas: 1
+        cores: 1
+        image: datafusedev/fuse-query:latest # Optional
+        memory: "1Gi" # Optional
+        memorylimit: "1Gi" # Optional
+        priority: 1 # Optional
+    namespace: default
+    name: multi-worker
+    workers:
+      - cores: 2
+        replicas: 1
+        memory: "1Gi" # Optional
+        memorylimit: "1Gi" # Optional
+        image: datafusedev/fuse-query:latest # Optional
+        priority: 2 # Optional
+      - cores: 1
+        replicas: 2
+        memory: "1Gi" # Optional
+        memorylimit: "1Gi" # Optional
+        image: datafusedev/fuse-query:latest # Optional
+        priority: 1 # Optional

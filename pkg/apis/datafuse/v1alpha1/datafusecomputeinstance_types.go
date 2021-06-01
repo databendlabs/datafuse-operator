@@ -41,17 +41,17 @@ type DatafuseComputeInstanceSpec struct {
 	Cores *int32 `json:"cores"`
 	// CoreLimit specifies a hard limit on CPU cores for the instance.
 	// +kubebuilder:validation:Type=string
-	// +kubebuilder:default="1200m"
+	// +kubebuilder:default="1300m"
 	// +kubebuilder:validation:Optional
 	CoreLimit *string `json:"coreLimit"`
 	// Memory is the amount of memory to request for the instance.
 	// +kubebuilder:validation:Type=string
-	// +kubebuilder:default="512m"
+	// +kubebuilder:default="512Mi"
 	// +kubebuilder:validation:Optional
 	Memory *string `json:"memory"`
 	// MemoryLimit is the amount of memory limit for the instance. in MiB
 	// +kubebuilder:validation:Type=string
-	// +kubebuilder:default="512m"
+	// +kubebuilder:default="512Mi"
 	// +kubebuilder:validation:Optional
 	MemoryLimit *string `json:"memorylimit"`
 	// Labels are the Kubernetes labels to be added to the pod.
@@ -59,7 +59,7 @@ type DatafuseComputeInstanceSpec struct {
 	Labels map[string]string `json:"labels"`
 	// Image is the container image to use. Overrides Spec.Image if set.
 	// +kubebuilder:validation:Type=string
-	// +kubebuilder:default="datafuselabs/fuse-query:latest"
+	// +kubebuilder:default="datafusedev/fuse-query:latest"
 	// +kubebuilder:validation:Optional
 	Image *string `json:"image"`
 	// ImagePullPolicy is the image pull policy for the driver, executor, and init-container.

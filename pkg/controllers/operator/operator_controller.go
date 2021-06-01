@@ -55,12 +55,6 @@ type OperatorController struct {
 	operatorQueue workqueue.RateLimitingInterface
 	groupQueue    workqueue.RateLimitingInterface
 
-	// // map namespace to their operators, depreciated
-	// cachedOperatorInformer map[string]cache.SharedInformer
-
-	// // map namespace to their groups, depreciated
-	// cachedGroupInformer map[string]cache.SharedInformer
-
 	recorder record.EventRecorder
 	setter   *utils.OperatorSetter
 }
@@ -108,6 +102,7 @@ func NewController(setter *utils.OperatorSetter, deployInformer appsinformers.De
 			if oldD.ResourceVersion == newD.ResourceVersion {
 				return
 			}
+			log.Debug().Msgf("compute group got updated, %s/%s", oldD.Namespace, oldD.Name)
 			c.handleUnneededDeployments(oldD, newD)
 			c.groupQueue.AddRateLimited(new)
 		},

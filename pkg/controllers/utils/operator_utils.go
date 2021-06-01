@@ -109,6 +109,10 @@ func makeServicePorts(d *appsv1.Deployment) []corev1.ServicePort {
 func makeEnvs(instanceSpec v1alpha1.DatafuseComputeInstanceSpec) []corev1.EnvVar {
 	return []corev1.EnvVar{
 		{
+			Name:  controller.FUSE_QUERY_NUM_CPUS,
+			Value: fmt.Sprintf("%d", *instanceSpec.Cores),
+		},
+		{
 			Name:  controller.FUSE_QUERY_MYSQL_HANDLER_HOST,
 			Value: "0.0.0.0",
 		},
@@ -162,7 +166,7 @@ func makeProbe(path, portName string) *corev1.Probe {
 func getMilliCPU(cores *int32) int64 {
 	if cores == nil {
 		// default is to allocate one cpu
-		return 1200
+		return 1300
 	}
 	return int64(*cores)*1000 + 300 //allocate some additional resources to avoid cpu race condition
 }
@@ -172,7 +176,11 @@ func makeResourceRequirements(instanceSpec v1alpha1.DatafuseComputeInstanceSpec)
 		if input == nil {
 			return quant
 		}
-		return resource.MustParse(*input)
+		inputQuant := resource.MustParse(*input)
+		if inputQuant.Cmp(quant) < 0 {
+			inputQuant = quant
+		}
+		return inputQuant
 	}
 	rq := corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{

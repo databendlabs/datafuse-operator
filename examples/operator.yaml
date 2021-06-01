@@ -55,7 +55,7 @@ spec:
                     format: int32
                     type: integer
                   coreLimit:
-                    default: 1200m
+                    default: 1300m
                     description: CoreLimit specifies a hard limit on CPU cores for
                       the instance.
                     type: string
@@ -74,7 +74,7 @@ spec:
                     format: int32
                     type: integer
                   image:
-                    default: datafuselabs/fuse-query:latest
+                    default: datafusedev/fuse-query:latest
                     description: Image is the container image to use. Overrides Spec.Image
                       if set.
                     type: string
@@ -90,12 +90,12 @@ spec:
                       pod.
                     type: object
                   memory:
-                    default: 512m
+                    default: 512Mi
                     description: Memory is the amount of memory to request for the
                       instance.
                     type: string
                   memorylimit:
-                    default: 512m
+                    default: 512Mi
                     description: MemoryLimit is the amount of memory limit for the
                       instance. in MiB
                     type: string
@@ -152,7 +152,7 @@ spec:
                       format: int32
                       type: integer
                     coreLimit:
-                      default: 1200m
+                      default: 1300m
                       description: CoreLimit specifies a hard limit on CPU cores for
                         the instance.
                       type: string
@@ -172,7 +172,7 @@ spec:
                       format: int32
                       type: integer
                     image:
-                      default: datafuselabs/fuse-query:latest
+                      default: datafusedev/fuse-query:latest
                       description: Image is the container image to use. Overrides
                         Spec.Image if set.
                       type: string
@@ -188,12 +188,12 @@ spec:
                         the pod.
                       type: object
                     memory:
-                      default: 512m
+                      default: 512Mi
                       description: Memory is the amount of memory to request for the
                         instance.
                       type: string
                     memorylimit:
-                      default: 512m
+                      default: 512Mi
                       description: MemoryLimit is the amount of memory limit for the
                         instance. in MiB
                       type: string
@@ -327,7 +327,7 @@ spec:
                           format: int32
                           type: integer
                         coreLimit:
-                          default: 1200m
+                          default: 1300m
                           description: CoreLimit specifies a hard limit on CPU cores
                             for the instance.
                           type: string
@@ -347,7 +347,7 @@ spec:
                           format: int32
                           type: integer
                         image:
-                          default: datafuselabs/fuse-query:latest
+                          default: datafusedev/fuse-query:latest
                           description: Image is the container image to use. Overrides
                             Spec.Image if set.
                           type: string
@@ -363,12 +363,12 @@ spec:
                             to the pod.
                           type: object
                         memory:
-                          default: 512m
+                          default: 512Mi
                           description: Memory is the amount of memory to request for
                             the instance.
                           type: string
                         memorylimit:
-                          default: 512m
+                          default: 512Mi
                           description: MemoryLimit is the amount of memory limit for
                             the instance. in MiB
                           type: string
@@ -426,7 +426,7 @@ spec:
                             format: int32
                             type: integer
                           coreLimit:
-                            default: 1200m
+                            default: 1300m
                             description: CoreLimit specifies a hard limit on CPU cores
                               for the instance.
                             type: string
@@ -446,7 +446,7 @@ spec:
                             format: int32
                             type: integer
                           image:
-                            default: datafuselabs/fuse-query:latest
+                            default: datafusedev/fuse-query:latest
                             description: Image is the container image to use. Overrides
                               Spec.Image if set.
                             type: string
@@ -462,12 +462,12 @@ spec:
                               to the pod.
                             type: object
                           memory:
-                            default: 512m
+                            default: 512Mi
                             description: Memory is the amount of memory to request
                               for the instance.
                             type: string
                           memorylimit:
-                            default: 512m
+                            default: 512Mi
                             description: MemoryLimit is the amount of memory limit
                               for the instance. in MiB
                             type: string
