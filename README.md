@@ -1,4 +1,6 @@
 # Datafuse operator
+**NOTICE**: this project is not under active maintainence stage, if you are interested on how to deploy databend on kubernetes, please take a look at our helm chart(https://github.com/datafuselabs/helm-charts)
+
 DataFuse operator manages fuse-query and fuse-store clusters atop [Kubernetes](https://kubernetes.io/) using [CRDs](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/). If looking to run FuseQuery on bare metal machine or docker, please refer to [How to Run](https://github.com/datafuselabs/datafuse/blob/master/docs/overview/building-and-running.md). 
 
 ## Requirements
